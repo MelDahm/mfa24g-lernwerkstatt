@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lerntool: Prostata – BPH &amp; Prostatakarzinom (MFA)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    max-width: 1100px;
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #1a3a5c, #2b6cb0);
+    color: #fff;
+    padding: 28px 32px;
+  }
+  header h1 { font-size: 1.6rem; }
+  header p { opacity: 0.85; margin-top: 6px; font-size: 0.95rem; }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    background: #edf2f7;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .tabs button {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 16px;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 3px solid transparent;
+  }
+  .tabs button:hover { background: #e2e8f0; }
+  .tabs button.active {
+    color: #2b6cb0;
+    border-bottom-color: #2b6cb0;
+    background: #fff;
+  }
+  .tab-content { display: none; padding: 28px 32px; }
+  .tab-content.active { display: block; }
+
+  h2 { color: #1a3a5c; margin: 20px 0 10px; font-size: 1.25rem; }
+  h3 { color: #2d3748; margin: 16px 0 8px; font-size: 1.05rem; }
+  p, li { line-height: 1.65; color: #2d3748; }
+  ul, ol { padding-left: 24px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  .highlight { background: #ebf8ff; padding: 14px 18px; border-left: 4px solid #2b6cb0; border-radius: 0 8px 8px 0; margin: 12px 0; }
+  .highlight.warn { background: #fffaf0; border-left-color: #dd6b20; }
+  .highlight.green { background: #f0fff4; border-left-color: #38a169; }
+  .highlight.pink { background: #fff5f5; border-left-color: #e53e3e; }
+
+  .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 12px 0; }
+  @media (max-width: 700px) { .two-cols { grid-template-columns: 1fr; } }
+  .card {
+    background: #f7f9fc;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+  }
+  .card h4 { color: #1a3a5c; margin-bottom: 6px; }
+
+  .info-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #ebf8ff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 12px 0;
+  }
+  .info-box .icon { font-size: 1.5rem; flex-shrink: 0; }
+
+  /* Quiz */
+  .quiz-question { margin: 16px 0; padding: 16px; background: #f7f9fc; border-radius: 10px; border: 1px solid #e2e8f0; }
+  .quiz-question .q-text { font-weight: 600; margin-bottom: 10px; }
+  .quiz-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .quiz-option:hover { border-color: #90cdf4; background: #ebf8ff; }
+  .quiz-option.selected { border-color: #2b6cb0; background: #bee3f8; }
+  .quiz-option.correct { border-color: #38a169; background: #c6f6d5; }
+  .quiz-option.incorrect { border-color: #e53e3e; background: #fed7d7; }
+  .quiz-option:disabled { cursor: default; }
+  .quiz-feedback { margin-top: 8px; font-size: 0.9rem; font-weight: 600; display: none; }
+  .quiz-feedback.show { display: block; }
+
+  /* Zuordnung Drag & Drop (vereinfacht: Klick-Zuordnung) */
+  .match-area { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+  .match-term {
+    padding: 8px 14px;
+    background: #fff;
+    border: 2px solid #2b6cb0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .match-term:hover { background: #bee3f8; }
+  .match-term.matched { background: #c6f6d5; border-color: #38a169; cursor: default; opacity: 0.7; }
+  .match-term.selected { background: #bee3f8; border-color: #1a3a5c; }
+  .match-desc {
+    padding: 8px 14px;
+    background: #f7f9fc;
+    border: 2px dashed #a0aec0;
+    border-radius: 8px;
+    min-width: 180px;
+    flex: 1;
+    transition: background 0.2s;
+  }
+  .match-desc.matched { background: #f0fff4; border-color: #38a169; border-style: solid; }
+
+  .match-item { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  /* Flashcards */
+  .fcard {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 28px 24px;
+    min-height: 160px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    user-select: none;
+    margin: 12px 0;
+  }
+  .fcard:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .fcard .front { font-size: 1.05rem; font-weight: 600; color: #1a3a5c; }
+  .fcard .back { font-size: 0.95rem; color: #2d3748; display: none; }
+  .fcard.flipped .front { display: none; }
+  .fcard.flipped .back { display: block; }
+  .fcard-nav { display: flex; gap: 10px; justify-content: center; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+  .fcard-nav button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #2b6cb0;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .fcard-nav button:hover { background: #1a4f8b; }
+  .fcard-nav button:disabled { background: #cbd5e1; cursor: default; }
+  .fcard-counter { font-weight: 600; color: #4a5568; }
+
+  /* Buttons allgemein */
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: inline-block;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: #2b6cb0; color: #fff; }
+  .btn-primary:hover { background: #1a4f8b; }
+  .btn-green { background: #38a169; color: #fff; }
+  .btn-green:hover { background: #2f855a; }
+  .btn-orange { background: #dd6b20; color: #fff; }
+  .btn-orange:hover { background: #c05621; }
+  .btn-gray { background: #e2e8f0; color: #2d3748; }
+  .btn-gray:hover { background: #cbd5e1; }
+
+  .progress-bar {
+    height: 8px;
+    background: #edf2f7;
+    border-radius: 4px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2b6cb0, #38a169);
+    border-radius: 4px;
+    transition: width 0.5s;
+    width: 0%;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #edf2f7; color: #1a3a5c; font-weight: 600; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+
+  .glossary-term { font-weight: 600; color: #2b6cb0; cursor: help; border-bottom: 1px dashed #90cdf4; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .tag-blue { background: #bee3f8; color: #2b6cb0; }
+  .tag-green { background: #c6f6d5; color: #276749; }
+  .tag-red { background: #fed7d7; color: #9b2c2c; }
+  .tag-orange { background: #feebc8; color: #9c4221; }
+
+  footer {
+    text-align: center;
+    padding: 16px;
+    color: #a0aec0;
+    font-size: 0.8rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .compact-list { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+  @media (max-width: 500px) { .compact-list { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Lerntool: Prostata – BPH &amp; Prostatakarzinom</h1>
+    <p>Medizinische Fachangestellte (MFA) – Lernfeld 08, Lernsituation 02 | Niedersachsen</p>
+  </header>
+
+  <div class="tabs" id="tabNav">
+    <button class="active" data-tab="tab1">Grundlagen</button>
+    <button data-tab="tab2">BPH</button>
+    <button data-tab="tab3">Prostatakarzinom</button>
+    <button data-tab="tab4">Vergleich</button>
+    <button data-tab="tab5">Quiz</button>
+    <button data-tab="tab6">Karteikarten</button>
+  </div>
+
+  <!-- ========= TAB 1: GRUNDLAGEN ========= -->
+  <div class="tab-content active" id="tab1">
+    <h2>Grundlagen: Die Prostata</h2>
+    <div class="info-box">
+      <span class="icon">&#x1F4AA;</span>
+      <div><strong>MFA-Praxisbezug:</strong> Die Prostatauntersuchung (digital-rektale Untersuchung) wird in der Praxis häufig von der MFA vorbereitet und begleitet. Der PSA-Test ist eine wichtige Blutabnahme. Sie werden Patienten aufklären und betreuen.</div>
+    </div>
+    <div class="two-cols">
+      <div class="card">
+        <h4>Was ist die Prostata?</h4>
+        <ul>
+          <li>Vorsteherdrüse, kommt nur beim Mann vor</li>
+          <li>Ca. kastaniengroß, Volumen 15–20 ml</li>
+          <li>Liegt unterhalb der Harnblase</li>
+          <li>Umschließt einen Teil der Harnröhre</li>
+          <li>Besteht aus Drüsen- und Muskelzellen</li>
+          <li>Eingeteilt in drei Zonen: Transitionalzone, Zentralzone, Peripheriezone</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Funktionen</h4>
+        <ul>
+          <li>Produktion eines <strong>Prostatasekrets</strong> (ca. 30 % der Samenflüssigkeit)</li>
+          <li>Sekret macht Spermien flüssig und bewegungsfähig</li>
+          <li>Enthält <strong>PSA</strong> (Prostata-spezifisches Antigen) – wichtig als Tumormarker</li>
+          <li>Muskelkontraktion stößt Sekret bei der Ejakulation aus</li>
+          <li>Für die Fortpflanzung unverzichtbar</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Lagebeziehung (wichtig für das Verst&auml;ndnis der Symptome)</h3>
+    <p>Die Prostata liegt direkt <strong>unterhalb der Harnblase</strong> und <strong>umschließt die Harnröhre</strong> (Urethra). Deshalb führt eine Vergrößerung zu Problemen beim Wasserlassen: Die Harnröhre wird eingeengt, der Urin kann nicht mehr ungehindert abfließen.</p>
+
+    <div class="highlight">
+      <strong>Merke für die MFA-Prüfung:</strong> Die Prostata kann man durch die <strong>digital-rektale Untersuchung (DRU)</strong> ertasten. Der Arzt führt einen Finger durch den After ein und tastet die Prostata von hinten ab. Die Konsistenz ist normalerweise prall-elastisch (wie ein Gummiball).
+    </div>
+  </div>
+
+  <!-- ========= TAB 2: BPH ========= -->
+  <div class="tab-content" id="tab2">
+    <h2>Gutartige Prostatavergrößerung (BPH)</h2>
+    <div class="info-box">
+      <span class="icon">&#x1F9EC;</span>
+      <div><strong>Definition:</strong> Gutartige (<em>benigne</em>) Volumenzunahme der Prostata durch ein Missverhältnis von Zellneubildung zu Zellabbau. <strong>Kein Krebs!</strong></div>
+    </div>
+
+    <h3>Epidemiologie</h3>
+    <ul>
+      <li>Typische Alterserkrankung des Mannes</li>
+      <li>Ab 50 Jahren: ca. 50 % der M&auml;nner betroffen</li>
+      <li>Ab 80 Jahren: ca. 90 % der M&auml;nner betroffen</li>
+      <li>Fortschreitend (wird mit der Zeit größer)</li>
+    </ul>
+
+    <h3>Ursachen / Risikofaktoren</h3>
+    <ul>
+      <li>Alter (Hauptrisikofaktor)</li>
+      <li>Genetische Faktoren</li>
+      <li>Gestörte Balance zwischen Testosteron und &Ouml;strogen</li>
+    </ul>
+
+    <h3>Symptome (Miktionsbeschwerden)</h3>
+    <p>Die Symptome werden mit dem <strong>IPSS-Fragebogen</strong> (International Prostate Symptom Score) erfasst:</p>
+    <div class="two-cols">
+      <div class="card">
+        <h4>Frühe Symptome</h4>
+        <ul>
+          <li>Abgeschwächter Harnstrahl</li>
+          <li>Verlängerte Miktion</li>
+          <li>N&auml;chtlicher Harndrang (Nykturie)</li>
+          <li>Zögern beim Wasserlassen</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Fortgeschrittene Symptome</h4>
+        <ul>
+          <li>Imperativer Harndrang (plötzlicher, nicht kontrollierbarer Harndrang)</li>
+          <li>Harnverhalt (kann nicht mehr pinkeln)</li>
+          <li>Restharnbildung</li>
+          <li>&Uuml;berlaufblase / Inkontinenz</li>
+          <li>Harnwegsinfekte</li>
+          <li>Rückstau bis in die Nieren &rarr; Nierenfunktionsstörung</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Stadieneinteilung</h3>
+    <table>
+      <tr><th>Stadium</th><th>Beschreibung</th></tr>
+      <tr><td>Stadium I</td><td>Irritative Symptome (Pollakisurie, Nykturie); kein Restharn, gute Blasenentleerung</td></tr>
+      <tr><td>Stadium II</td><td>Obstruktive Symptome (abgeschwächter Strahl, Restharn &gt; 50 ml); Blasenentleerungsstörung</td></tr>
+      <tr><td>Stadium III</td><td>Dekompensation (Harnverhalt, Überlaufblase, chronische Harnwegsinfekte, Nierenstauung)</td></tr>
+    </table>
+
+    <h3>Diagnostik</h3>
+    <ul>
+      <li><strong>Anamnese:</strong> Beschwerden, Dauer, Vorerkrankungen, Medikamente</li>
+      <li><strong>IPSS-Fragebogen</strong> (standardisierte Symptombewertung)</li>
+      <li><strong>Digital-rektale Untersuchung (DRU)</strong> – Größe, Form, Konsistenz, Knoten?</li>
+      <li><strong>PSA-Bestimmung</strong> im Blut</li>
+      <li><strong>Urinuntersuchung</strong> (Ausschluss Harnwegsinfekt)</li>
+      <li><strong>Ultraschall</strong> der Prostata (transrektal / abdominal)</li>
+      <li><strong>Uroflowmetrie</strong> (Harnstrahlmessung)</li>
+    </ul>
+
+    <h3>Therapie</h3>
+    <table>
+      <tr><th>Maßnahme</th><th>Beschreibung</th></tr>
+      <tr><td>Watchful Waiting</td><td>Beobachten und Abwarten (bei milden Symptomen); ca. 40 % bessern sich spontan</td></tr>
+      <tr><td>Phytotherapie</td><td>Pflanzliche Mittel (Kürbissamen, Sägepalme, Brennnessel); kurzfristige Linderung möglich</td></tr>
+      <tr><td>Medikamente</td><td>Alpha-Blocker (entspannen Blasenmuskulatur), 5α-Reduktasehemmer (reduzieren Prostata-Volumen)</td></tr>
+      <tr><td>Operation</td><td>TURP (transurethrale Resektion der Prostata) – Goldstandard; auch roboterassistierte Verfahren</td></tr>
+    </table>
+    <div class="highlight warn">
+      <strong>Wichtig:</strong> Jeder 5. bis 10. Mann benötigt im Verlauf eine Operation. Der Eingriff wird meist minimalinvasiv durchgeführt (TURP).
+    </div>
+  </div>
+
+  <!-- ========= TAB 3: PROSTATAKARZINOM ========= -->
+  <div class="tab-content" id="tab3">
+    <h2>Prostatakarzinom (Prostatakrebs)</h2>
+    <div class="info-box">
+      <span class="icon">&#x26A0;&#xFE0F;</span>
+      <div><strong>Definition:</strong> Bösartige (<em>maligne</em>) Wucherung der Prostata. H&auml;ufigste Krebserkrankung des Mannes in Deutschland.</div>
+    </div>
+
+    <h3>Epidemiologie</h3>
+    <ul>
+      <li>Ca. <strong>60.000 Neuerkrankungen</strong> pro Jahr in Deutschland</li>
+      <li>Häufigste Krebsart beim Mann</li>
+      <li>Durchschnittsalter bei Diagnose: <strong>72 Jahre</strong></li>
+      <li>Vor dem 40. Lebensjahr sehr selten</li>
+      <li>Ca. <strong>15.000 Todesfälle</strong> pro Jahr</li>
+      <li>Fünf-Jahres-Überlebensrate: ca. 91 %</li>
+      <li>3 von 4 Tumoren werden im frühen Stadium entdeckt</li>
+    </ul>
+
+    <h3>Risikofaktoren</h3>
+    <ul>
+      <li>Alter (> 50 Jahre)</li>
+      <li>Familiäre Vorbelastung (Vater, Bruder, Onkel)</li>
+      <li>Genetische Faktoren (vererbbare Mutationen)</li>
+      <li>Testosteron (ohne Testosteron kein Prostatakarzinom)</li>
+      <li>Chronische Entzündungen der Prostata (diskutiert)</li>
+      <li>Lebensstil (Rauchen, Alkohol, Bewegungsmangel, ungesunde Ernährung)</li>
+    </ul>
+
+    <h3>Symptome</h3>
+    <div class="highlight pink">
+      <strong>Achtung:</strong> Im frühen Stadium gibt es <strong>keine</strong> oder nur sehr selten Beschwerden! Symptome treten erst bei fortgeschrittener Erkrankung auf.
+    </div>
+    <ul>
+      <li>Blut im Urin (Hämaturie)</li>
+      <li>Blasenentleerungsstörungen</li>
+      <li>Störungen der Darmentleerung</li>
+      <li>Schmerzen in der Prostata</li>
+      <li>Rückenschmerzen / Ischiasschmerzen (bei Knochenmetastasen)</li>
+    </ul>
+
+    <h3>Früherkennung</h3>
+    <table>
+      <tr><th>Maßnahme</th><th>Details</th></tr>
+      <tr><td>Gesetzliche Früherkennung</td><td>Ab 45. Lebensjahr, einmal jährlich kostenlos für die Krankenkasse</td></tr>
+      <tr><td>DRU (digital-rektale Untersuchung)</td><td>Abtasten der Prostata, Genitalien, Lymphknoten in der Leiste</td></tr>
+      <tr><td>PSA-Test (Eigenleistung)</td><td>Nicht in der gesetzlichen Früherkennung enthalten, Kosten trägt der Patient selbst. Wichtig für <strong>Verlaufskontrollen</strong></td></tr>
+    </table>
+
+    <h3>Diagnostik bei Verdacht</h3>
+    <ul>
+      <li><strong>Anamnese &amp; körperliche Untersuchung</strong> (inkl. DRU)</li>
+      <li><strong>PSA-Wert im Blut</strong> (erhöht bei Karzinom, aber auch bei BPH, Entzündung, nach Radfahren etc.)</li>
+      <li><strong>Ultraschall</strong> (transrektal: TRUS)</li>
+      <li><strong>Prostatabiopsie</strong> (Gewebeprobe zur Sicherung der Diagnose)</li>
+      <li><strong>MRT</strong> der Prostata (zur genaueren Beurteilung)</li>
+    </ul>
+    <div class="highlight warn">
+      <strong>MFA-Hinweis:</strong> PSA-Blutabnahme <strong>nie direkt nach</strong> der digital-rektalen Untersuchung durchführen! Der PSA-Wert wäre durch die Manipulation verfälscht. Auch Radfahren vor der Blutabnahme kann den PSA-Wert erhöhen.
+    </div>
+
+    <h3>Therapie (abhängig von Stadium, Alter, Allgemeinzustand)</h3>
+    <table>
+      <tr><th>Stadium</th><th>Therapieoptionen</th></tr>
+      <tr><td>Frühes Stadium</td><td><strong>Active Surveillance</strong> (aktive Überwachung, engmaschige Kontrollen) oder Operation / Bestrahlung</td></tr>
+      <tr><td>Lokal fortgeschritten</td><td><strong>Operation</strong> (radikale Prostatektomie) + ggf. Bestrahlung + Hormontherapie</td></tr>
+      <tr><td>Metastasiert</td><td><strong>Systemische Therapie:</strong> Hormontherapie (Testosteronentzug), Chemotherapie, Kombinationen</td></tr>
+    </table>
+
+    <h3>OP-Verfahren im Überblick</h3>
+    <ul>
+      <li><strong>Offene Prostatektomie</strong> – großer Schnitt, nur noch bei sehr großen Volumina</li>
+      <li><strong>Da-Vinci-Roboter-OP</strong> – roboterassistiert, feinere Schnitte, weniger Gewebetrauma</li>
+      <li><strong>Laparoskopisch</strong> – minimalinvasiv (kleine Schnitte)</li>
+    </ul>
+    <div class="highlight">
+      <strong>Mögliche OP-Folgen:</strong> Inkontinenz (unfreiwilliger Urinabgang) und erektile Dysfunktion (Impotenz). Aufklärung ist wichtig – aber besser als der Krebs.
+    </div>
+
+    <h3>Nachsorge</h3>
+    <ul>
+      <li>Regelmäßige PSA-Kontrollen</li>
+      <li>Beckenbodentraining (für Kontinenz)</li>
+      <li>Rehabilitation (Reha-Klinik)</li>
+      <li>Psychosoziale Unterstützung</li>
+    </ul>
+  </div>
+
+  <!-- ========= TAB 4: VERGLEICH ========= -->
+  <div class="tab-content" id="tab4">
+    <h2>BPH vs. Prostatakarzinom – Vergleich</h2>
+    <p>Eine tabellarische Übersicht der wichtigsten Unterschiede und Gemeinsamkeiten.</p>
+
+    <table>
+      <tr><th>Merkmal</th><th>BPH (gutartige Vergrößerung)</th><th>Prostatakarzinom (bösartig)</th></tr>
+      <tr><td>Dignität</td><td><span class="tag tag-green">Gutartig</span></td><td><span class="tag tag-red">Bösartig</span></td></tr>
+      <tr><td>Lebensgefahr</td><td>Nicht lebensbedrohlich</td><td>Potentiell lebensbedrohlich</td></tr>
+      <tr><td>Häufigkeit</td><td>Sehr häufig (50 % ab 50 J., 90 % ab 80 J.)</td><td>Häufigste Krebsart beim Mann (ca. 60.000/Jahr)</td></tr>
+      <tr><td>Typisches Alter</td><td>Ab 50 Jahren</td><td>Durchschnitt 72 Jahre</td></tr>
+      <tr><td>Frühsymptome</td><td>Miktionsbeschwerden (abgeschwächter Strahl, Nykturie)</td><td>Oft <strong>keine</strong> Frühsymptome</td></tr>
+      <tr><td>Spätsymptome</td><td>Harnverhalt, Überlaufblase, Nierenstauung</td><td>Blut im Urin, Schmerzen (Metastasen), Miktionsprobleme</td></tr>
+      <tr><td>Tastbefund (DRU)</td><td>Vergrößert, glatt, prall-elastisch</td><td>Derb, knotig, unregelmäßig, höckrig</td></tr>
+      <tr><td>PSA-Wert</td><td>Leicht bis mäßig erhöht m&ouml;glich</td><td>Deutlich erhöht (kann aber auch normal sein)</td></tr>
+      <tr><td>Diagnosesicherung</td><td>Klinik + Ultraschall + IPSS</td><td>Biopsie (Gewebeprobe)</td></tr>
+      <tr><td>Therapie</td><td>Watchful waiting, Phytotherapie, Medikamente, TURP</td><td>Active Surveillance, OP, Bestrahlung, Hormontherapie, Chemo</td></tr>
+      <tr><td>Prognose</td><td>Gut (nicht lebensbedrohlich)</td><td>Sehr gut bei Früherkennung (91 % überleben 5 Jahre)</td></tr>
+    </table>
+
+    <h3>Gemeinsamkeiten</h3>
+    <ul>
+      <li>Beide betreffen die Prostata</li>
+      <li>Beide können Miktionsbeschwerden verursachen</li>
+      <li>Beide können den PSA-Wert erhöhen</li>
+      <li>Beide sind altersassoziiert</li>
+      <li>Diagnostik überschneidet sich (DRU, PSA, Ultraschall)</li>
+    </ul>
+
+    <div class="highlight green">
+      <strong>Kernaussage für die Praxis:</strong> Eine BPH ist nicht gefährlich, aber unangenehm. Prostatakrebs ist gefährlich, aber bei Früherkennung sehr gut behandelbar. Die DRU und der PSA-Wert sind die wichtigsten Screening-Methoden.
+    </div>
+  </div>
+
+  <!-- ========= TAB 5: QUIZ ========= -->
+  <div class="tab-content" id="tab5">
+    <h2>Quiz: Überprüfen Sie Ihr Wissen</h2>
+    <p>Beantworten Sie die Fragen. Nach jeder Auswahl sehen Sie, ob Ihre Antwort richtig war.</p>
+    <div class="progress-bar"><div class="fill" id="quizProgress"></div></div>
+    <div id="quizContainer"></div>
+    <div style="text-align:center; margin-top:16px;">
+      <button class="btn btn-green" onclick="resetQuiz()">Quiz zurücksetzen</button>
+    </div>
+  </div>
+
+  <!-- ========= TAB 6: KARTEIKARTEN ========= -->
+  <div class="tab-content" id="tab6">
+    <h2>Karteikarten: Lernen &amp; Wiederholen</h2>
+    <p>Tippen/klicken Sie auf die Karte, um die Rückseite zu sehen.</p>
+    <div class="fcard" id="flashcard" onclick="flipCard()">
+      <div class="front" id="cardFront">Vorderseite</div>
+      <div class="back" id="cardBack">Rückseite</div>
+    </div>
+    <div class="fcard-nav">
+      <button id="prevBtn" onclick="prevCard()">Zurück</button>
+      <span class="fcard-counter" id="cardCounter">1 / 20</span>
+      <button id="nextBtn" onclick="nextCard()">Weiter</button>
+    </div>
+    <div style="text-align:center; margin-top:10px;">
+      <button class="btn btn-orange" onclick="shuffleCards()">Durchmischen</button>
+    </div>
+  </div>
+
+  <footer>
+    Inhalte basierend auf Dr. Tobias Weigl | MFA-Ausbildung Niedersachsen – Lernfeld 08 – Lernsituation 02
+  </footer>
+</div>
+
+<script>
+  // ========= TAB-NAVIGATION =========
+  document.querySelectorAll('.tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ========= QUIZ =========
+  const quizData = [
+    {
+      question: 'Wie groß ist die Prostata im Normalzustand?',
+      options: ['Wie eine Erbse (ca. 2 ml)', 'Wie eine Kastanie (ca. 15–20 ml)', 'Wie ein Tennisball (ca. 50 ml)', 'Wie ein Golfball (ca. 10 ml)'],
+      correct: 1
+    },
+    {
+      question: 'Welches Organ umschließt die Prostata teilweise?',
+      options: ['Den Enddarm', 'Die Harnblase', 'Die Harnröhre', 'Den Samenleiter'],
+      correct: 2
+    },
+    {
+      question: 'Ab welchem Alter haben etwa 50 % der Männer eine BPH?',
+      options: ['Ab 40 Jahren', 'Ab 50 Jahren', 'Ab 65 Jahren', 'Ab 80 Jahren'],
+      correct: 1
+    },
+    {
+      question: 'Was ist das typische Frühsymptom einer BPH?',
+      options: ['Blut im Urin', 'Fieber', 'Abgeschwächter Harnstrahl', 'Rückenschmerzen'],
+      correct: 2
+    },
+    {
+      question: 'Was bedeutet PSA?',
+      options: ['Prostata-Sekret-Antigen', 'Prostata-spezifisches Antigen', 'Primäres Sexual-Antigen', 'Prostata-Screening-Assay'],
+      correct: 1
+    },
+    {
+      question: 'Welche Aussage zum PSA-Wert ist richtig?',
+      options: ['Ein erhöhter PSA-Wert beweist Prostatakrebs', 'Der PSA-Wert ist nur bei Krebs erhöht', 'Der PSA-Wert kann auch nach Radfahren oder DRU erhöht sein', 'PSA wird in der Leber produziert'],
+      correct: 2
+    },
+    {
+      question: 'Was ist die TURP?',
+      options: ['Eine Blutuntersuchung', 'Ein bildgebendes Verfahren', 'Eine Operationsmethode an der Prostata', 'Ein Medikament'],
+      correct: 2
+    },
+    {
+      question: 'Welcher Tastbefund spricht eher für ein Prostatakarzinom?',
+      options: ['Glatt, prall-elastisch', 'Weich, druckdolent', 'Derb, knotig, unregelmäßig', 'Nicht tastbar'],
+      correct: 2
+    },
+    {
+      question: 'Ab welchem Alter haben Männer Anspruch auf das gesetzliche Früherkennungsprogramm für Prostatakrebs?',
+      options: ['Ab 40', 'Ab 45', 'Ab 50', 'Ab 55'],
+      correct: 1
+    },
+    {
+      question: 'Welche Funktion hat das Prostatasekret?',
+      options: ['Es hemmt die Spermienproduktion', 'Es macht die Spermien flüssig und bewegungsfähig', 'Es senkt den PSA-Wert', 'Es verhindert Harnwegsinfekte'],
+      correct: 1
+    },
+    {
+      question: 'Wie viele Männer erkranken jährlich neu an Prostatakrebs in Deutschland?',
+      options: ['Ca. 15.000', 'Ca. 30.000', 'Ca. 60.000', 'Ca. 120.000'],
+      correct: 2
+    },
+    {
+      question: 'Was bedeutet "Active Surveillance"?',
+      options: ['Sofortige Operation', 'Aktive Überwachung mit regelmäßigen Kontrollen', 'Tägliche Medikamenteneinnahme', 'Bestrahlungstherapie'],
+      correct: 1
+    },
+    {
+      question: 'Welche Maßnahme gehört NICHT zur BPH-Therapie?',
+      options: ['Watchful Waiting', 'Phytotherapie', 'Chemotherapie', 'TURP'],
+      correct: 2
+    },
+    {
+      question: 'Was ist eine mögliche Komplikation einer unbehandelten BPH?',
+      options: ['Prostatakrebs', 'Nierenfunktionsstörung durch Rückstau', 'Herzinfarkt', 'Diabetes mellitus'],
+      correct: 1
+    },
+    {
+      question: 'Welche Untersuchung wird mit dem Finger durchgeführt?',
+      options: ['Uroflowmetrie', 'PSA-Test', 'Digital-rektale Untersuchung (DRU)', 'Ultraschall'],
+      correct: 2
+    }
+  ];
+
+  let quizAnswered = [];
+
+  function renderQuiz() {
+    const container = document.getElementById('quizContainer');
+    container.innerHTML = '';
+    quizAnswered = new Array(quizData.length).fill(false);
+    quizData.forEach((q, idx) => {
+      const div = document.createElement('div');
+      div.className = 'quiz-question';
+      div.id = 'q-' + idx;
+      let html = `<div class="q-text">${idx + 1}. ${q.question}</div>`;
+      q.options.forEach((opt, oi) => {
+        html += `<button class="quiz-option" data-q="${idx}" data-opt="${oi}" onclick="answerQuiz(${idx}, ${oi})">${opt}</button>`;
+      });
+      html += `<div class="quiz-feedback" id="fb-${idx}"></div>`;
+      div.innerHTML = html;
+      container.appendChild(div);
+    });
+    updateQuizProgress();
+  }
+
+  function answerQuiz(qIdx, optIdx) {
+    if (quizAnswered[qIdx]) return;
+    const q = quizData[qIdx];
+    const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-option`);
+    buttons.forEach(b => b.disabled = true);
+    buttons.forEach((b, i) => {
+      if (i === q.correct) b.classList.add('correct');
+      else if (i === optIdx) b.classList.add('incorrect');
+      if (i === optIdx && i === q.correct) b.classList.add('selected');
+    });
+    quizAnswered[qIdx] = true;
+    const fb = document.getElementById('fb-' + qIdx);
+    fb.className = 'quiz-feedback show';
+    fb.style.color = optIdx === q.correct ? '#38a169' : '#e53e3e';
+    fb.textContent = optIdx === q.correct ? 'Richtig!' : `Falsch. Die richtige Antwort ist: ${q.options[q.correct]}`;
+    updateQuizProgress();
+  }
+
+  function updateQuizProgress() {
+    const answered = quizAnswered.filter(a => a).length;
+    const total = quizData.length;
+    const pct = (answered / total) * 100;
+    document.getElementById('quizProgress').style.width = pct + '%';
+  }
+
+  function resetQuiz() {
+    renderQuiz();
+  }
+
+  // ========= KARTEIKARTEN =========
+  const cardData = [
+    { front: 'Prostata', back: 'Vorsteherdrüse; liegt unterhalb der Harnblase; umschließt die Harnröhre' },
+    { front: 'Normalgröße der Prostata', back: 'Ca. kastaniengroß, Volumen 15–20 ml' },
+    { front: 'Funktion der Prostata', back: 'Produktion von Prostatasekret (Samenflüssigkeit) mit PSA; macht Spermien flüssig' },
+    { front: 'BPH – Bedeutung', back: 'Benigne Prostatahyperplasie = gutartige Prostatavergrößerung, kein Krebs' },
+    { front: 'BPH – Häufigkeit', back: '50 % der Männer ab 50 Jahren, 90 % ab 80 Jahren' },
+    { front: 'BPH – Frühsymptome', back: 'Abgeschwächter Harnstrahl, Nykturie, verzögertes Wasserlassen' },
+    { front: 'BPH – Spätsymptome', back: 'Harnverhalt, Überlaufblase, Harnwegsinfekte, Nierenstauung' },
+    { front: 'IPSS', back: 'International Prostate Symptom Score – standardisierter Fragebogen zur Symptombewertung' },
+    { front: 'TURP', back: 'Transurethrale Resektion der Prostata – operative Entfernung von Prostatagewebe durch die Harnröhre' },
+    { front: 'Prostatakarzinom', back: 'Bösartige Wucherung der Prostata; häufigste Krebsart beim Mann' },
+    { front: 'Prostatakrebs – Neuerkrankungen pro Jahr', back: 'Ca. 60.000 in Deutschland' },
+    { front: 'Prostatakrebs – 5-Jahres-Überlebensrate', back: 'Ca. 91 % (sehr gute Prognose bei Früherkennung)' },
+    { front: 'PSA', back: 'Prostata-spezifisches Antigen; Tumormarker; kann erhöht sein bei Krebs, BPH, Entzündung' },
+    { front: 'PSA-Blutabnahme – wichtig zu wissen', back: 'Nicht nach DRU oder Radfahren abnehmen! (falsch erhöhte Werte)' },
+    { front: 'DRU', back: 'Digital-rektale Untersuchung; Finger durch After zur Prostata-Tastung' },
+    { front: 'Tastbefund BPH vs. Karzinom', back: 'BPH = glatt, prall-elastisch; Karzinom = derb, knotig, unregelmäßig' },
+    { front: 'Früherkennung Prostatakrebs', back: 'Ab 45 Jahren einmal jährlich (DRU + Tastung); PSA-Test ist Eigenleistung' },
+    { front: 'Therapie Prostatakrebs (früh)', back: 'Active Surveillance, Operation (Prostatektomie), Bestrahlung' },
+    { front: 'Therapie Prostatakrebs (fortgeschritten)', back: 'Hormontherapie (Testosteronentzug), Chemotherapie, Kombination' },
+    { front: 'Mögliche OP-Folgen', back: 'Inkontinenz, erektile Dysfunktion (Impotenz)' }
+  ];
+
+  let currentCard = 0;
+  let cardOrder = cardData.map((_, i) => i);
+  let isFlipped = false;
+
+  function renderCard() {
+    const idx = cardOrder[currentCard];
+    const c = cardData[idx];
+    document.getElementById('cardFront').textContent = c.front;
+    document.getElementById('cardBack').textContent = c.back;
+    document.getElementById('cardCounter').textContent = `${currentCard + 1} / ${cardOrder.length}`;
+    document.getElementById('flashcard').classList.remove('flipped');
+    document.getElementById('prevBtn').disabled = currentCard === 0;
+    document.getElementById('nextBtn').disabled = currentCard === cardOrder.length - 1;
+    isFlipped = false;
+  }
+
+  function flipCard() {
+    document.getElementById('flashcard').classList.toggle('flipped');
+    isFlipped = !isFlipped;
+  }
+
+  function nextCard() {
+    if (currentCard < cardOrder.length - 1) { currentCard++; renderCard(); }
+  }
+
+  function prevCard() {
+    if (currentCard > 0) { currentCard--; renderCard(); }
+  }
+
+  function shuffleCards() {
+    for (let i = cardOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cardOrder[i], cardOrder[j]] = [cardOrder[j], cardOrder[i]];
+    }
+    currentCard = 0;
+    renderCard();
+  }
+
+  // Initialisierung
+  renderQuiz();
+  renderCard();
+</script>
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Präsentation: Prostata – BPH & Prostatakarzinom</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a202c;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    display: none;
+    padding: 50px 70px;
+    background: #fff;
+    overflow-y: auto;
+    flex-direction: column;
+  }
+  .slide.active { display: flex; }
+  .slide-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a3a5c;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 4px solid #2b6cb0;
+  }
+  .slide-subtitle {
+    font-size: 1.1rem;
+    color: #5a6a7a;
+    margin-bottom: 24px;
+  }
+  .content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .content-row { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
+  .content-row .text { flex: 1; min-width: 280px; }
+  .content-row .visual { flex: 1; min-width: 280px; display: flex; justify-content: center; }
+
+  h2 { font-size: 1.5rem; color: #1a3a5c; margin-top: 8px; }
+  h3 { font-size: 1.15rem; color: #2d3748; margin-top: 6px; }
+  p, li { font-size: 1.1rem; line-height: 1.7; color: #2d3748; }
+  ul, ol { padding-left: 28px; margin: 6px 0; }
+  li { margin: 2px 0; }
+  .highlight-box {
+    background: #ebf8ff;
+    border-left: 5px solid #2b6cb0;
+    padding: 14px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 8px 0;
+    font-size: 1rem;
+  }
+  .highlight-box.green { background: #f0fff4; border-left-color: #38a169; }
+  .highlight-box.warn { background: #fffaf0; border-left-color: #dd6b20; }
+  .highlight-box.pink { background: #fff5f5; border-left-color: #e53e3e; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card {
+    background: #f7f9fc;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 1.1rem; }
+  .card ul { font-size: 1rem; }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .tag-green { background: #c6f6d5; color: #22543d; }
+  .tag-red { background: #fed7d7; color: #9b2c2c; }
+  .tag-blue { background: #bee3f8; color: #2b6cb0; }
+  .tag-orange { background: #feebc8; color: #9c4221; }
+
+  .big-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #2b6cb0;
+    line-height: 1;
+  }
+  .big-number .unit { font-size: 1rem; font-weight: 400; color: #5a6a7a; }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: #1a202c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 100;
+  }
+  .nav-bar button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #2d3748;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nav-bar button:hover { background: #4a5568; }
+  .nav-bar button.primary { background: #2b6cb0; }
+  .nav-bar button.primary:hover { background: #1a4f8b; }
+  .nav-bar .dots { display: flex; gap: 6px; }
+  .nav-bar .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #4a5568;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-bar .dot.active { background: #63b3ed; transform: scale(1.3); }
+  .nav-bar .slide-num { color: #a0aec0; font-size: 0.85rem; min-width: 60px; text-align: center; }
+  .nav-bar .key-hint { color: #718096; font-size: 0.75rem; }
+  @media (max-width: 600px) {
+    .slide { padding: 20px 16px; }
+    .slide-title { font-size: 1.4rem; }
+    .two-col { grid-template-columns: 1fr; }
+    .content-row { flex-direction: column; }
+    p, li { font-size: 1rem; }
+    .nav-bar button span { display: none; }
+  }
+
+  /* SVG-Styles */
+  svg text { font-family: 'Segoe UI', Arial, sans-serif; }
+  .svg-container { max-width: 100%; height: auto; display: flex; justify-content: center; }
+  .svg-container svg { width: 100%; height: auto; max-height: 55vh; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<div class="nav-bar">
+  <button onclick="prevSlide()">&larr; <span>Zurück</span></button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-num" id="slideNum">1 / 20</span>
+  <button class="primary" onclick="nextSlide()"><span>Weiter</span> &rarr;</button>
+</div>
+
+<!-- ============ SLIDES ============ -->
+<div class="slide active" id="s0">
+  <div class="content" style="text-align:center; align-items:center;">
+    <div style="font-size:5rem; margin-bottom:10px;">&#x1F9EC;</div>
+    <div class="slide-title" style="border:none;">Die Prostata<br>BPH &amp; Prostatakarzinom</div>
+    <p style="font-size:1.2rem; color:#5a6a7a;">Medizinische Fachangestellte – Lernfeld 08, Lernsituation 02</p>
+    <p style="font-size:0.95rem; color:#a0aec0; margin-top:30px;">&larr; Navigation mit den Pfeiltasten oder Buttons</p>
+  </div>
+</div>
+
+<!-- S1: Anatomie -->
+<div class="slide" id="s1">
+  <div class="slide-title">Anatomie der Prostata</div>
+  <div class="content">
+    <div class="content-row">
+      <div class="text">
+        <ul>
+          <li><strong>Vorsteherdrüse</strong> – kommt <strong>nur beim Mann</strong> vor</li>
+          <li>Größe: ca. <strong>kastaniengroß</strong> (15–20 ml)</li>
+          <li>Liegt <strong>unterhalb der Harnblase</strong></li>
+          <li><strong>Umschließt die Harnröhre</strong></li>
+          <li>Besteht aus <strong>Drüsen- und Muskelzellen</strong></li>
+          <li>Eingeteilt in drei Zonen: <strong>Transitionalzone, Zentralzone, Peripheriezone</strong></li>
+          <li>Von einer <strong>Kapsel</strong> umschlossen</li>
+        </ul>
+        <div class="highlight-box" style="margin-top:10px;">
+          <strong>DRU:</strong> Die Prostata ist durch den After tastbar – normalerweise prall-elastisch wie ein Gummiball.
+        </div>
+      </div>
+      <div class="visual">
+        <svg viewBox="0 0 320 400" width="320" height="400">
+          <rect width="320" height="400" fill="#f7f9fc" rx="10" />
+          <!-- Körperumriss -->
+          <path d="M250 40 Q270 50 275 80 L280 130 Q278 160 270 190 L260 220 Q250 250 235 270 L215 300 Q200 320 180 330 L150 340 Q120 335 100 320 L80 300 Q65 280 60 260 L55 220 Q50 180 55 140 Q60 110 70 90 Q80 70 100 60 L130 55 Q170 48 220 55 L250 40Z" fill="#fce4d6" stroke="#c04000" stroke-width="2"/>
+          <!-- Blase -->
+          <ellipse cx="160" cy="115" rx="35" ry="25" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+          <text x="160" y="120" text-anchor="middle" font-size="9" fill="#1e40af">Harnblase</text>
+          <!-- Prostata -->
+          <ellipse cx="165" cy="190" rx="40" ry="28" fill="#fce7f3" stroke="#db2777" stroke-width="2.5"/>
+          <text x="165" y="185" text-anchor="middle" font-size="10" font-weight="bold" fill="#9d174d">Prostata</text>
+          <text x="165" y="198" text-anchor="middle" font-size="7" fill="#9d174d">(umschließt Harnröhre)</text>
+          <!-- Harnröhre -->
+          <path d="M160 140 L165 218 L160 250 Q155 270 150 290" fill="none" stroke="#f59e0b" stroke-width="3.5"/>
+          <text x="135" y="240" font-size="8" fill="#b45309">Harnröhre</text>
+          <!-- Penis Andeutung -->
+          <rect x="138" y="290" width="30" height="40" rx="6" fill="#fce4d6" stroke="#c04000" stroke-width="1.5"/>
+          <text x="205" y="60" font-size="9" fill="#718096">Seitenansicht (schematisch)</text>
+          <!-- Pfeil für DRU -->
+          <path d="M70 310 Q40 320 50 350 Q55 365 70 370" fill="none" stroke="#1a3a5c" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="20" y="350" font-size="8" fill="#1a3a5c">DRU (Finger)</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2: Funktion -->
+<div class="slide" id="s2">
+  <div class="slide-title">Funktion der Prostata</div>
+  <div class="content">
+    <div class="two-col">
+      <div class="card">
+        <h3>&#x1F4A7; Produktion von Prostatasekret</h3>
+        <ul>
+          <li>Macht ca. <strong>30 % der Samenflüssigkeit</strong> aus</li>
+          <li>Sekret ist dünnflüssig, milchig</li>
+          <li>Enthält <strong>PSA</strong> (Prostata-spezifisches Antigen)</li>
+          <li>PSA verflüssigt das Ejakulat &rarr; Spermien werden <strong>beweglich</strong></li>
+          <li>Ohne Prostatasekret: <strong>keine Befruchtung</strong> möglich</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x1F9B5; Muskelkontraktion</h3>
+        <ul>
+          <li>Glatte Muskulatur in der Prostata</li>
+          <li>Zieht sich bei der <strong>Ejakulation</strong> zusammen</li>
+          <li>Stößt das Sekret in die Harnröhre aus</li>
+        </ul>
+        <h3 style="margin-top:14px;">&#x1F489; PSA-Wert</h3>
+        <ul>
+          <li>Wichtiger <strong>Tumormarker</strong></li>
+          <li>Normwert altersabhängig</li>
+          <li>Erhöht bei: <strong>Karzinom, BPH, Entzündung</strong></li>
+          <li>Nach DRU oder Radfahren <strong>falsch erhöht</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: BPH Definition & Zahlen -->
+<div class="slide" id="s3">
+  <div class="slide-title">Gutartige Prostatavergrößerung (BPH)</div>
+  <div class="content">
+    <div class="highlight-box green" style="font-size:1.15rem;">
+      <strong>Definition:</strong> Gutartige Volumenzunahme der Prostata durch Missverhältnis von Zellneubildung zu Zellabbau. <strong>Kein Krebs, nicht lebensbedrohlich.</strong>
+    </div>
+    <div style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center; margin:16px 0;">
+      <div style="text-align:center;">
+        <div class="big-number">50 <span class="unit">%</span></div>
+        <p style="font-size:0.9rem;">der Männer ab 50 Jahren</p>
+      </div>
+      <div style="text-align:center;">
+        <div class="big-number">90 <span class="unit">%</span></div>
+        <p style="font-size:0.9rem;">der Männer ab 80 Jahren</p>
+      </div>
+      <div style="text-align:center;">
+        <div class="big-number">15&ndash;20 <span class="unit">ml</span></div>
+        <p style="font-size:0.9rem;">Normalvolumen</p>
+      </div>
+      <div style="text-align:center;">
+        <div class="big-number">60&ndash;80 <span class="unit">ml</span></div>
+        <p style="font-size:0.9rem;">mögliches Volumen bei BPH</p>
+      </div>
+    </div>
+    <div class="highlight-box warn" style="margin-top:8px;">
+      <strong>Wichtig:</strong> Die BPH ist eine <strong>fortschreitende</strong> Erkrankung. Unbehandelt wird sie größer und die Symptome nehmen zu.
+    </div>
+  </div>
+</div>
+
+<!-- S4: BPH Ursachen -->
+<div class="slide" id="s4">
+  <div class="slide-title">BPH – Ursachen &amp; Risikofaktoren</div>
+  <div class="content">
+    <div class="content-row">
+      <div class="text">
+        <div class="card" style="height:100%;">
+          <h3>&#x1F3E5; Hauptfaktoren</h3>
+          <ul>
+            <li><strong>Alter</strong> – der wichtigste Risikofaktor</li>
+            <li><strong>Genetische Faktoren</strong> – familiäre Veranlagung</li>
+            <li><strong>Hormonelle Veränderungen</strong>: gestörte Balance zwischen Testosteron und Östrogen</li>
+          </ul>
+          <h3 style="margin-top:14px;">&#x1F9EC; Pathomechanismus</h3>
+          <p style="font-size:1rem;">Die Prostata wächst durch ein <strong>&Uuml;berwiegen der Zellneubildung</strong> gegenüber dem Zellabbau. Sie drückt auf die Harnröhre und den Blasenhals &rarr; Abflussbehinderung.</p>
+        </div>
+      </div>
+      <div class="visual" style="flex:0.6;">
+        <svg viewBox="0 0 250 280" width="250" height="280">
+          <rect width="250" height="280" fill="#f7f9fc" rx="8" />
+          <!-- normale Prostata -->
+          <ellipse cx="80" cy="120" rx="30" ry="22" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+          <text x="80" y="124" text-anchor="middle" font-size="9" font-weight="bold" fill="#9d174d">Normal</text>
+          <text x="80" y="100" text-anchor="middle" font-size="8" fill="#718096">15–20 ml</text>
+          <!-- Harnröhre normal -->
+          <rect x="75" y="80" width="10" height="80" fill="#f59e0b" opacity="0.7" rx="2"/>
+          <!-- Pfeil -->
+          <text x="125" y="128" text-anchor="middle" font-size="16" fill="#2b6cb0">&#x27A1;</text>
+          <!-- vergrößerte Prostata -->
+          <ellipse cx="195" cy="120" rx="48" ry="35" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+          <text x="195" y="118" text-anchor="middle" font-size="9" font-weight="bold" fill="#9d174d">BPH</text>
+          <text x="195" y="130" text-anchor="middle" font-size="7" fill="#9d174d">&gt; 40 ml</text>
+          <!-- Harnröhre eingeengt -->
+          <rect x="185" y="80" width="20" height="80" fill="#f59e0b" opacity="0.4" rx="2"/>
+          <line x1="190" y1="90" x2="200" y2="90" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="190" y1="100" x2="200" y2="100" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="190" y1="110" x2="200" y2="110" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="188" y="170" font-size="7" fill="#e53e3e">Harnröhre eingeengt</text>
+          <text x="60" y="260" font-size="8" fill="#718096">Die vergrößerte Prostata drückt die Harnröhre zusammen</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: BPH Symptome -->
+<div class="slide" id="s5">
+  <div class="slide-title">BPH – Symptome</div>
+  <div class="content">
+    <div class="two-col">
+      <div class="card">
+        <h3>&#x1F504; Frühe Symptome</h3>
+        <ul>
+          <li>&#x1F4A7; <strong>Abgeschwächter Harnstrahl</strong></li>
+          <li>&#x23F0; Verlängerte Miktion (längeres Wasserlassen)</li>
+          <li>&#x1F319; <strong>Nykturie</strong> (nächtlicher Harndrang)</li>
+          <li>&#x23F3; Zögern / Startverzögerung</li>
+          <li>&#x1F4A6; Nachtröpfeln</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x26A0;&#xFE0F; Fortgeschrittene Symptome</h3>
+        <ul>
+          <li>&#x1F4A5; <strong>Imperativer Harndrang</strong> (plötzlich, nicht kontrollierbar)</li>
+          <li>&#x26D4; <strong>Harnverhalt</strong> (kann nicht pinkeln)</li>
+          <li>&#x1F4A7; Restharnbildung (Urinrest in der Blase)</li>
+          <li>&#x1F4A6; Überlaufblase / Inkontinenz</li>
+          <li>&#x1F9A0; Harnwegsinfekte</li>
+          <li>&#x1F9F1; Rückstau &rarr; <strong>Nierenfunktionsstörung</strong></li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:10px;">
+      <strong>IPSS:</strong> Der International Prostate Symptom Score ist ein standardisierter Fragebogen (8 Fragen) zur Bewertung des Schweregrads der Symptome.
+    </div>
+  </div>
+</div>
+
+<!-- S6: BPH Stadien -->
+<div class="slide" id="s6">
+  <div class="slide-title">BPH – Stadieneinteilung</div>
+  <div class="content">
+    <table style="width:100%; border-collapse:collapse; font-size:1.05rem;">
+      <tr style="background:#1a3a5c; color:#fff;">
+        <th style="padding:12px 16px; text-align:left;">Stadium</th>
+        <th style="padding:12px 16px; text-align:left;">Beschreibung</th>
+        <th style="padding:12px 16px; text-align:left;">Symptome</th>
+      </tr>
+      <tr style="border-bottom:2px solid #e2e8f0;">
+        <td style="padding:14px 16px; font-weight:700; color:#38a169;">Stadium I<br><span style="font-weight:400; font-size:0.85rem; color:#718096;">Reizstadium</span></td>
+        <td style="padding:14px 16px;">Irritative Symptome, kein Restharn, gute Blasenentleerung</td>
+        <td style="padding:14px 16px;">Pollakisurie, Nykturie, imperativer Harndrang</td>
+      </tr>
+      <tr style="border-bottom:2px solid #e2e8f0;">
+        <td style="padding:14px 16px; font-weight:700; color:#dd6b20;">Stadium II<br><span style="font-weight:400; font-size:0.85rem; color:#718096;">Restharnstadium</span></td>
+        <td style="padding:14px 16px;">Obstruktive Symptome, Restharn &gt; 50 ml, Blasenentleerungsstörung</td>
+        <td style="padding:14px 16px;">Abgeschwächter Strahl, Restharngefühl, verlängerte Miktion</td>
+      </tr>
+      <tr>
+        <td style="padding:14px 16px; font-weight:700; color:#e53e3e;">Stadium III<br><span style="font-weight:400; font-size:0.85rem; color:#718096;">Dekompensation</span></td>
+        <td style="padding:14px 16px;">Dekompensation: Harnverhalt, Überlaufblase, chronische Harnwegsinfekte</td>
+        <td style="padding:14px 16px;">Harnverhalt, Überlaufinkontinenz, Nierenstauung</td>
+      </tr>
+    </table>
+    <div class="highlight-box warn" style="margin-top:12px;">
+      <strong>Komplikation:</strong> Bei anhaltendem Harnverhalt kann sich der Harn über die Harnleiter bis in die Nieren zurückstauen &rarr; Nierenfunktionsstörung!
+    </div>
+  </div>
+</div>
+
+<!-- S7: BPH Diag -->
+<div class="slide" id="s7">
+  <div class="slide-title">BPH – Diagnostik</div>
+  <div class="content">
+    <div class="two-col">
+      <div class="card">
+        <h3>&#x1F50D; Untersuchungen</h3>
+        <ul>
+          <li><strong>Anamnese</strong> (Beschwerden, Dauer, Medikamente)</li>
+          <li><strong>IPSS-Fragebogen</strong></li>
+          <li><strong>Digital-rektale Untersuchung (DRU)</strong></li>
+          <li><strong>PSA-Bestimmung</strong> im Blut</li>
+          <li><strong>Urinuntersuchung</strong></li>
+          <li><strong>Ultraschall</strong> (transrektal TRUS / abdominal)</li>
+          <li><strong>Uroflowmetrie</strong> (Harnstrahlmessung)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x1F9EC; Tastbefund (DRU)</h3>
+        <p style="font-size:1rem;">Der Arzt tastet die Prostata mit dem Finger durch den After ab:</p>
+        <ul>
+          <li><strong>Normal:</strong> kastaniengroß, glatt, prall-elastisch</li>
+          <li><strong>BPH:</strong> vergrößert, aber glatt und elastisch</li>
+          <li><strong>Karzinom:</strong> derb, knotig, unregelmäßig, höckrig</li>
+        </ul>
+        <div class="highlight-box pink" style="margin-top:8px; font-size:0.9rem;">
+          <strong>MFA:</strong> PSA-Blutabnahme <strong>nie nach DRU</strong> oder Radfahren!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: BPH Therapie -->
+<div class="slide" id="s8">
+  <div class="slide-title">BPH – Therapie</div>
+  <div class="content">
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:6px;">&#x1F440;</div>
+        <h3>Watchful Waiting</h3>
+        <p style="font-size:0.9rem;">Beobachten + Abwarten bei milden Symptomen. <strong>40 %</strong> bessern sich spontan.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:6px;">&#x1F33F;</div>
+        <h3>Phytotherapie</h3>
+        <p style="font-size:0.9rem;">Kürbissamen, Sägepalme, Brennnessel. Kurzfristige Linderung.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:6px;">&#x1F48A;</div>
+        <h3>Medikamente</h3>
+        <p style="font-size:0.9rem;">Alpha-Blocker (entspannen Muskulatur) oder 5α-Reduktasehemmer (verkleinern Prostata).</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:6px;">&#x1F52A;</div>
+        <h3>Operation (TURP)</h3>
+        <p style="font-size:0.9rem;">Transurethrale Resektion. Goldstandard. Jeder 5.–10. Mann benötigt OP.</p>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:12px;">
+      <strong>MFA-Praxis:</strong> Bei der TURP wird ein Instrument durch die Harnröhre eingeführt und Prostatagewebe abgetragen. Minimalinvasiv, keine äußeren Schnitte.
+    </div>
+  </div>
+</div>
+
+<!-- S9: Übersicht Prostatakarzinom -->
+<div class="slide" id="s9">
+  <div class="slide-title">Prostatakarzinom</div>
+  <div class="content">
+    <div class="highlight-box pink" style="font-size:1.15rem;">
+      <strong>Definition:</strong> Bösartige (<em>maligne</em>) Wucherung der Prostata. <strong>Häufigste Krebserkrankung des Mannes</strong> in Deutschland.
+    </div>
+    <div style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center; margin:16px 0;">
+      <div style="text-align:center;">
+        <div class="big-number">60.000 <span class="unit">/ Jahr</span></div>
+        <p style="font-size:0.9rem;">Neuerkrankungen in DE</p>
+      </div>
+      <div style="text-align:center;">
+        <div class="big-number">15.000 <span class="unit">/ Jahr</span></div>
+        <p style="font-size:0.9rem;">Todesfälle</p>
+      </div>
+      <div style="text-align:center;">
+        <div class="big-number">72 <span class="unit">Jahre</span></div>
+        <p style="font-size:0.9rem;">Durchschnittsalter bei Diagnose</p>
+      </div>
+      <div style="text-align:center;">
+        <div class="big-number">91 <span class="unit">%</span></div>
+        <p style="font-size:0.9rem;">5-Jahres-Überlebensrate</p>
+      </div>
+    </div>
+    <div class="highlight-box green" style="margin-top:8px;">
+      <strong>Gute Nachricht:</strong> 3 von 4 Tumoren werden im frühen Stadium entdeckt. Erkannt ist Prostatakrebs sehr gut heilbar!
+    </div>
+  </div>
+</div>
+
+<!-- S10: Risikofaktoren -->
+<div class="slide" id="s10">
+  <div class="slide-title">Prostatakarzinom – Risikofaktoren</div>
+  <div class="content">
+    <div class="content-row">
+      <div class="text">
+        <div class="card">
+          <h3>&#x1F9E0; Bekannte Risikofaktoren</h3>
+          <ul>
+            <li><strong>Alter</strong> &gt; 50 Jahre (Hauptfaktor)</li>
+            <li><strong>Familiäre Vorbelastung</strong> (Vater, Bruder, Onkel)</li>
+            <li><strong>Genetische Faktoren</strong> (vererbbare Mutationen)</li>
+            <li><strong>Testosteron</strong> – ohne Testosteron kein Prostatakarzinom</li>
+            <li><strong>Chronische Entzündungen</strong> der Prostata (diskutiert)</li>
+            <li><strong>Lebensstil:</strong> Rauchen, &Uuml;bergewicht, Bewegungsmangel</li>
+          </ul>
+        </div>
+        <div class="highlight-box warn" style="margin-top:8px;">
+          <strong>Prävention:</strong> Keine spezifische Prostatakrebs-Prävention bekannt. Allgemein: Nicht rauchen, wenig Alkohol, Bewegung, gesunde Ernährung.
+        </div>
+      </div>
+      <div class="visual" style="flex:0.5;">
+        <svg viewBox="0 0 200 220" width="200" height="220">
+          <rect width="200" height="220" fill="#fff5f5" rx="10" />
+          <text x="100" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#9b2c2c">Risikofaktoren</text>
+          <!-- Alter -->
+          <rect x="30" y="40" width="160" height="30" rx="6" fill="#fed7d7" stroke="#fc8181" stroke-width="1.5"/>
+          <text x="110" y="60" text-anchor="middle" font-size="11" font-weight="600" fill="#9b2c2c">Alter &gt; 50</text>
+          <!-- Genetik -->
+          <rect x="30" y="78" width="160" height="30" rx="6" fill="#fed7d7" stroke="#fc8181" stroke-width="1.5"/>
+          <text x="110" y="98" text-anchor="middle" font-size="11" font-weight="600" fill="#9b2c2c">Familiäre Vorbelastung</text>
+          <!-- Testosteron -->
+          <rect x="30" y="116" width="160" height="30" rx="6" fill="#fed7d7" stroke="#fc8181" stroke-width="1.5"/>
+          <text x="110" y="136" text-anchor="middle" font-size="11" font-weight="600" fill="#9b2c2c">Testosteron</text>
+          <!-- Lebensstil -->
+          <rect x="30" y="154" width="160" height="30" rx="6" fill="#feebc8" stroke="#f6ad55" stroke-width="1.5"/>
+          <text x="110" y="174" text-anchor="middle" font-size="11" font-weight="600" fill="#9c4221">Lebensstil (Rauchen etc.)</text>
+          <!-- Entzündung -->
+          <rect x="30" y="192" width="160" height="22" rx="6" fill="#feebc8" stroke="#f6ad55" stroke-width="1.5"/>
+          <text x="110" y="207" text-anchor="middle" font-size="10" font-weight="600" fill="#9c4221">Chronische Entzündungen?</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S11: Früherkennung -->
+<div class="slide" id="s11">
+  <div class="slide-title">Früherkennung Prostatakarzinom</div>
+  <div class="content">
+    <div class="highlight-box" style="font-size:1.1rem;">
+      <strong>Kernbotschaft:</strong> Prostatakrebs ist im Frühstadium <strong>sehr gut heilbar</strong>. Die Früherkennung rettet Leben!
+    </div>
+    <div class="two-col" style="margin-top:12px;">
+      <div class="card">
+        <h3>&#x1F3E5; Gesetzliche Früherkennung</h3>
+        <ul>
+          <li><strong>Ab 45. Lebensjahr</strong> einmal jährlich</li>
+          <li><strong>Kostenfrei</strong> für die Krankenkasse</li>
+          <li>Inhalt: <strong>DRU</strong> (Abtasten Prostata + Genitalien + Leistenlymphknoten)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x1F489; PSA-Test</h3>
+        <ul>
+          <li><strong>Nicht</strong> in der gesetzlichen Früherkennung enthalten</li>
+          <li><strong>Eigenleistung</strong> (Patient zahlt selbst)</li>
+          <li>Wichtig für <strong>Verlaufskontrollen</strong></li>
+          <li>Allein nicht ausreichend für Diagnose</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box warn" style="margin-top:8px;">
+      <strong>MFA-Hinweis:</strong> Viele Männer kommen erst zur Untersuchung, wenn Symptome auftreten. Motivieren Sie Patienten zur regelmäßigen Vorsorge!
+    </div>
+  </div>
+</div>
+
+<!-- S12: Diagnostik -->
+<div class="slide" id="s12">
+  <div class="slide-title">Prostatakarzinom – Diagnostik bei Verdacht</div>
+  <div class="content">
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem;">&#x1F50C;</div>
+        <h3>1. Basisdiagnostik</h3>
+        <ul style="text-align:left; font-size:0.95rem;">
+          <li>Anamnese</li>
+          <li>DRU</li>
+          <li>PSA im Blut</li>
+          <li>Urinuntersuchung</li>
+        </ul>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem;">&#x1F4F7;</div>
+        <h3>2. Bildgebung</h3>
+        <ul style="text-align:left; font-size:0.95rem;">
+          <li>Transrektaler Ultraschall (TRUS)</li>
+          <li>MRT der Prostata</li>
+        </ul>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem;">&#x1F9EC;</div>
+        <h3>3. Gewebeprobe</h3>
+        <ul style="text-align:left; font-size:0.95rem;">
+          <li><strong>Prostatabiopsie</strong></li>
+          <li>Zur Sicherung der Diagnose</li>
+          <li>Bei unklarem Befund</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box pink" style="margin-top:10px;">
+      <strong>Wichtig:</strong> Die Biopsie ist die <strong>einzige Methode</strong>, um ein Prostatakarzinom sicher nachzuweisen oder auszuschließen.
+    </div>
+  </div>
+</div>
+
+<!-- S13: Symptome PCa -->
+<div class="slide" id="s13">
+  <div class="slide-title">Prostatakarzinom – Symptome</div>
+  <div class="content">
+    <div class="highlight-box pink" style="font-size:1.2rem;">
+      &#x26A0;&#xFE0F; <strong>Im Frühstadium:</strong> Keine oder sehr selten Beschwerden!  
+    </div>
+    <div class="two-col" style="margin-top:12px;">
+      <div class="card">
+        <h3>&#x1F514; Mögliche Symptome (spät)</h3>
+        <ul>
+          <li>&#x1F4A7; <strong>Blut im Urin</strong> (Hämaturie)</li>
+          <li>&#x1F4A6; Blasenentleerungsstörungen</li>
+          <li>&#x1F4A9; Störungen der Darmentleerung</li>
+          <li>&#x1F4A2; Schmerzen in der Prostata</li>
+          <li>&#x1F9F1; Rückenschmerzen / Ischiasschmerzen (bei Knochenmetastasen)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x1F4A1; Früh erkennen!</h3>
+        <p style="font-size:1rem;">Da Frühsymptome fehlen, ist die <strong>Vorsorgeuntersuchung</strong> essenziell!</p>
+        <p style="font-size:1rem;">Rückenschmerzen durch Knochenmetastasen bedeuten bereits ein <strong>fortgeschrittenes Stadium</strong>.</p>
+        <div class="highlight-box warn" style="margin-top:8px; font-size:0.9rem;">
+          <strong>MFA-Botschaft:</strong> Warten Sie nicht auf Symptome &rarr; regelmäßige Vorsorge ab 45!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S14: Therapie -->
+<div class="slide" id="s14">
+  <div class="slide-title">Prostatakarzinom – Therapie (stadienabhängig)</div>
+  <div class="content">
+    <table style="width:100%; border-collapse:collapse; font-size:1rem;">
+      <tr style="background:#1a3a5c; color:#fff;">
+        <th style="padding:12px 16px;">Stadium</th>
+        <th style="padding:12px 16px;">Therapieoptionen</th>
+        <th style="padding:12px 16px;">Ziel</th>
+      </tr>
+      <tr style="border-bottom:2px solid #e2e8f0;">
+        <td style="padding:14px 16px; font-weight:700; color:#38a169;">Frühstadium<br><span style="font-weight:400; font-size:0.8rem;">lokal begrenzt</span></td>
+        <td style="padding:14px 16px;">
+          <span class="tag tag-blue">Active Surveillance</span><br>
+          <span class="tag tag-green">Radikale Prostatektomie</span><br>
+          <span class="tag tag-orange">Bestrahlung</span>
+        </td>
+        <td style="padding:14px 16px;">Heilung</td>
+      </tr>
+      <tr style="border-bottom:2px solid #e2e8f0;">
+        <td style="padding:14px 16px; font-weight:700; color:#dd6b20;">Fortgeschritten<br><span style="font-weight:400; font-size:0.8rem;">lokal fortgeschritten</span></td>
+        <td style="padding:14px 16px;">
+          <span class="tag tag-green">Operation</span> + <span class="tag tag-orange">Bestrahlung</span><br>
+          <span class="tag tag-blue">Hormontherapie</span> (Testosteronentzug)
+        </td>
+        <td style="padding:14px 16px;">Heilung / Kontrolle</td>
+      </tr>
+      <tr>
+        <td style="padding:14px 16px; font-weight:700; color:#e53e3e;">Metastasiert<br><span style="font-weight:400; font-size:0.8rem;">Fernmetastasen</span></td>
+        <td style="padding:14px 16px;">
+          <span class="tag tag-blue">Hormontherapie</span><br>
+          <span class="tag tag-red">Chemotherapie</span><br>
+          <span class="tag tag-orange">Kombination</span>
+        </td>
+        <td style="padding:14px 16px;">Palliation / Lebensverlängerung</td>
+      </tr>
+    </table>
+    <div class="highlight-box" style="margin-top:10px; font-size:0.95rem;">
+      <strong>Active Surveillance:</strong> Regelmäßige Überwachung ohne sofortige Behandlung. Heilung bleibt möglich! Kein Verzicht auf Therapie.
+    </div>
+  </div>
+</div>
+
+<!-- S15: OP-Verfahren -->
+<div class="slide" id="s15">
+  <div class="slide-title">Operationsverfahren im Überblick</div>
+  <div class="content">
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:6px;">&#x1F52A;</div>
+        <h3>Offene Prostatektomie</h3>
+        <ul style="text-align:left; font-size:0.9rem;">
+          <li>Großer Schnitt (Bauchdecke/Damm)</li>
+          <li>Klassisches Verfahren</li>
+          <li>Nur noch bei sehr großen Volumina</li>
+        </ul>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:6px;">&#x1F916;</div>
+        <h3>Da-Vinci-Roboter</h3>
+        <ul style="text-align:left; font-size:0.9rem;">
+          <li>Roboterassistierte OP</li>
+          <li>Feinere, präzisere Schnitte</li>
+          <li>Operateur steuert den Roboter</li>
+          <li>Weniger Gewebetrauma</li>
+        </ul>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:6px;">&#x1F489;</div>
+        <h3>Laparoskopisch</h3>
+        <ul style="text-align:left; font-size:0.9rem;">
+          <li>Minimalinvasiv (kleine Schnitte)</li>
+          <li>Kamera + Instrumente</li>
+          <li>Schnellere Genesung</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box pink" style="margin-top:10px;">
+      <strong>Mögliche OP-Folgen:</strong> Inkontinenz und erektile Dysfunktion (Impotenz). Aufklärung ist wichtig – aber besser als der Krebs!
+    </div>
+  </div>
+</div>
+
+<!-- S16: Nachsorge -->
+<div class="slide" id="s16">
+  <div class="slide-title">Nachsorge</div>
+  <div class="content">
+    <div class="content-row">
+      <div class="text">
+        <div class="card">
+          <h3>&#x1F9F1; Wichtige Maßnahmen</h3>
+          <ul>
+            <li><strong>PSA-Kontrollen</strong> in regelmäßigen Abständen</li>
+            <li><strong>Beckenbodentraining</strong> zur Wiedererlangung der Kontinenz</li>
+            <li><strong>Rehabilitation</strong> in einer Reha-Klinik</li>
+            <li><strong>Psychosoziale Unterstützung</strong> für Patient und Angehörige</li>
+          </ul>
+        </div>
+        <div class="highlight-box" style="margin-top:8px;">
+          <strong>MFA-Rolle:</strong> Sie sind oft die erste Ansprechperson. Motivieren Sie den Patienten zu regelmäßigen Nachsorgeterminen und Beckenbodentraining!
+        </div>
+      </div>
+      <div class="visual" style="flex:0.5;">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <rect width="200" height="200" fill="#f0fff4" rx="10" />
+          <text x="100" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#22543d">Nachsorge – Bausteine</text>
+          <!-- Blöcke -->
+          <rect x="30" y="36" width="140" height="28" rx="6" fill="#c6f6d5" stroke="#68d391" stroke-width="1.5"/>
+          <text x="100" y="55" text-anchor="middle" font-size="10" font-weight="600" fill="#22543d">PSA-Kontrollen</text>
+          <rect x="30" y="72" width="140" height="28" rx="6" fill="#c6f6d5" stroke="#68d391" stroke-width="1.5"/>
+          <text x="100" y="91" text-anchor="middle" font-size="10" font-weight="600" fill="#22543d">Beckenbodentraining</text>
+          <rect x="30" y="108" width="140" height="28" rx="6" fill="#c6f6d5" stroke="#68d391" stroke-width="1.5"/>
+          <text x="100" y="127" text-anchor="middle" font-size="10" font-weight="600" fill="#22543d">Rehabilitation</text>
+          <rect x="30" y="144" width="140" height="28" rx="6" fill="#feebc8" stroke="#f6ad55" stroke-width="1.5"/>
+          <text x="100" y="163" text-anchor="middle" font-size="10" font-weight="600" fill="#9c4221">Psychosoziale Begleitung</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S17: Vergleich BPH vs PCa -->
+<div class="slide" id="s17">
+  <div class="slide-title">BPH vs. Prostatakarzinom – Vergleich</div>
+  <div class="content">
+    <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+      <tr style="background:#1a3a5c; color:#fff;">
+        <th style="padding:10px 14px;">Merkmal</th>
+        <th style="padding:10px 14px;">BPH <span style="font-weight:400;">(gutartig)</span></th>
+        <th style="padding:10px 14px;">Prostatakarzinom <span style="font-weight:400;">(bösartig)</span></th>
+      </tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Dignität</td><td style="padding:8px 14px;"><span class="tag tag-green">Gutartig</span></td><td style="padding:8px 14px;"><span class="tag tag-red">Bösartig</span></td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Lebensgefahr</td><td style="padding:8px 14px;">Nicht lebensbedrohlich</td><td style="padding:8px 14px;">Potentiell lebensbedrohlich</td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Häufigkeit</td><td style="padding:8px 14px;">50 % ab 50 J., 90 % ab 80 J.</td><td style="padding:8px 14px;">Ca. 60.000 Neuerkrankungen/Jahr</td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Frühsymptome</td><td style="padding:8px 14px;">Miktionsbeschwerden</td><td style="padding:8px 14px;">Oft <strong>keine</strong></td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Tastbefund (DRU)</td><td style="padding:8px 14px;">Glatt, prall-elastisch</td><td style="padding:8px 14px;">Derb, knotig, unregelmäßig</td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">PSA-Wert</td><td style="padding:8px 14px;">Leicht-mäßig erhöht möglich</td><td style="padding:8px 14px;">Deutlich erhöht (auch normal möglich)</td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Diagnosesicherung</td><td style="padding:8px 14px;">Klinik + IPSS + Ultraschall</td><td style="padding:8px 14px;">Prostatabiopsie</td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Therapie</td><td style="padding:8px 14px;">Watchful waiting, Medikamente, TURP</td><td style="padding:8px 14px;">OP, Bestrahlung, Hormontherapie, Chemo</td></tr>
+      <tr><td style="padding:8px 14px; font-weight:600;">Prognose</td><td style="padding:8px 14px;">Sehr gut</td><td style="padding:8px 14px;">91 % 5-Jahres-Überleben</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- S18: PSA -->
+<div class="slide" id="s18">
+  <div class="slide-title">PSA – Das Wichtigste für die MFA</div>
+  <div class="content">
+    <div class="highlight-box" style="font-size:1.1rem;">
+      <strong>PSA = Prostata-spezifisches Antigen</strong> – Eiweiß, das in der Prostata produziert wird und ins Blut gelangt.
+    </div>
+    <div class="two-col" style="margin-top:12px;">
+      <div class="card">
+        <h3>&#x2705; Was Sie beachten müssen</h3>
+        <ul>
+          <li>Blutabnahme <strong>vor</strong> der DRU (nicht danach!)</li>
+          <li>Patient sollte <strong>48h vorher nicht Rad fahren</strong></li>
+          <li>Auch nach Ejakulation oder Prostatamassage erhöht</li>
+          <li>Ein <strong>einzelner erhöhter Wert</strong> ist nicht automatisch Krebs</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x1F4CA; Interpretation</h3>
+        <ul>
+          <li>Erhöht bei: <span class="tag tag-red">Karzinom</span> <span class="tag tag-orange">BPH</span> <span class="tag tag-blue">Entzündung</span> <span class="tag tag-blue">nach DRU</span></li>
+          <li>Wichtig: <strong>Verlaufskontrollen</strong> (mehrere Werte über Zeit)</li>
+          <li>Nicht geeignet als alleinige Früherkennungsmethode</li>
+          <li>Keine standardisierten Alters-Normwerte</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box green" style="margin-top:8px; font-size:0.95rem;">
+      <strong>MFA-Merkhilfe:</strong> PSA-Blutentnahme immer <strong>VOR</strong> der rektalen Untersuchung und <strong>NACH</strong> der Anamnese einplanen!
+    </div>
+  </div>
+</div>
+
+<!-- S19: MFA-Rolle -->
+<div class="slide" id="s19">
+  <div class="slide-title">Ihre Rolle als MFA</div>
+  <div class="content">
+    <div class="two-col">
+      <div class="card">
+        <h3>&#x1F4CB; Vorbereitung der Untersuchung</h3>
+        <ul>
+          <li>Terminvereinbarung (Früherkennung ab 45)</li>
+          <li>Patientenaufklärung über Ablauf</li>
+          <li>PSA-Blutabnahme <strong>vor</strong> DRU</li>
+          <li>Material für DRU bereitlegen (Handschuhe, Gleitgel)</li>
+          <li>Urinbecher für Urinuntersuchung</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#x1F4AC; Patientenbetreuung</h3>
+        <ul>
+          <li>&#x1F9EC; Ängste nehmen (es ist unangenehm, aber kurz)</li>
+          <li>&#x1F50D; Nachfragen zu Symptomen (IPSS)</li>
+          <li>&#x1F4A1; Aufklärung über Vorsorge motivieren</li>
+          <li>&#x1F9F1; Bei Diagnose: einfühlsame Begleitung</li>
+          <li>&#x1F4C5; Einladung zu Nachsorgeterminen</li>
+          <li>&#x1F3E7; Verweis an Urologen bei Auffälligkeiten</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:10px;">
+      <strong>Key Message:</strong> Sie als MFA sind oft die erste Ansprechperson. Ihre professionelle und einfühlsame Betreuung kann Patienten motivieren, zur Vorsorge zu gehen!
+    </div>
+  </div>
+</div>
+
+<!-- S20: Zusammenfassung -->
+<div class="slide" id="s20">
+  <div class="slide-title">Zusammenfassung &amp; Kernbotschaften</div>
+  <div class="content">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="card" style="background:#ebf8ff;">
+        <h3>&#x1F9EC; BPH</h3>
+        <ul style="font-size:0.95rem;">
+          <li>Gutartige Vergrößerung</li>
+          <li>Häufig ab 50 Jahren</li>
+          <li>Symptome: Miktionsbeschwerden</li>
+          <li>Nicht lebensbedrohlich</li>
+          <li>Therapie: WW, Phytotherapie, Medis, TURP</li>
+        </ul>
+      </div>
+      <div class="card" style="background:#fff5f5;">
+        <h3>&#x26A0;&#xFE0F; Prostatakarzinom</h3>
+        <ul style="font-size:0.95rem;">
+          <li>Bösartig, häufigste Krebsart beim Mann</li>
+          <li>Früherkennung ab 45 (DRU + PSA)</li>
+          <li>Im Frühstadium gut heilbar (91 % überleben)</li>
+          <li>Keine Frühsymptome &rarr; Vorsorge essenziell!</li>
+          <li>Therapie stadienabhängig</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box green" style="margin-top:12px; text-align:center; font-size:1.15rem;">
+      &#x1F4A1; <strong>Merke:</strong> Prostata – klein, aber wichtig! BPH ist nervig, Prostatakrebs ist gefährlich &ndash; aber bei Früherkennung <strong>sehr gut behandelbar</strong>.
+    </div>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let current = 0;
+
+  function showSlide(idx) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[idx].classList.add('active');
+    document.getElementById('slideNum').textContent = (idx + 1) + ' / ' + totalSlides;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+
+  function nextSlide() {
+    if (current < totalSlides - 1) { current++; showSlide(current); }
+  }
+  function prevSlide() {
+    if (current > 0) { current--; showSlide(current); }
+  }
+
+  // Tastensteuerung
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); prevSlide(); }
+    if (e.key === 'Home') { e.preventDefault(); current = 0; showSlide(0); }
+    if (e.key === 'End') { e.preventDefault(); current = totalSlides - 1; showSlide(current); }
+  });
+
+  // Klick auf rechte/linke Hälfte für Weiter/Zurück
+  document.addEventListener('click', e => {
+    const nav = document.querySelector('.nav-bar');
+    if (nav.contains(e.target)) return;
+    const x = e.clientX;
+    if (x > window.innerWidth / 2) nextSlide();
+    else prevSlide();
+  });
+
+  // Dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => { current = i; showSlide(i); };
+    dotsContainer.appendChild(dot);
+  }
+
+  // Touch-Support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  });
+</script>
+</body>
+</html>
