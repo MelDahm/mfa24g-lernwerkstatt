@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prostatakrebs-Früherkennung – MFA Lernwerkstatt</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;padding:16px;display:flex;justify-content:center}
+  .app{max-width:900px;width:100%;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.12);overflow:hidden}
+  header{background:linear-gradient(135deg,#1a3a5c,#2b6cb0);color:#fff;padding:28px 32px}
+  header h1{font-size:1.5rem}
+  header p{opacity:.85;margin-top:6px;font-size:.9rem}
+  .tabs{display:flex;flex-wrap:wrap;background:#edf2f7;border-bottom:2px solid #e2e8f0}
+  .tabs button{flex:1;min-width:100px;padding:13px 12px;border:none;background:0 0;font-size:.85rem;font-weight:600;color:#4a5568;cursor:pointer;transition:background .2s,color .2s;border-bottom:3px solid transparent}
+  .tabs button:hover{background:#e2e8f0}
+  .tabs button.active{color:#2b6cb0;border-bottom-color:#2b6cb0;background:#fff}
+  .tab-content{display:none;padding:28px 32px}.tab-content.active{display:block}
+  h2{color:#1a3a5c;margin:18px 0 10px;font-size:1.2rem}
+  h3{color:#2d3748;margin:14px 0 8px;font-size:1rem}
+  p,li{line-height:1.65;color:#2d3748}
+  ul,ol{padding-left:22px;margin:6px 0}li{margin:4px 0}
+  .highlight{background:#ebf8ff;padding:14px 18px;border-left:4px solid #2b6cb0;border-radius:0 8px 8px 0;margin:12px 0}
+  .highlight.warn{background:#fffaf0;border-left-color:#dd6b20}
+  .highlight.green{background:#f0fff4;border-left-color:#38a169}
+  .highlight.pink{background:#fff5f5;border-left-color:#e53e3e}
+  .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:12px 0}
+  @media(max-width:700px){.two-cols{grid-template-columns:1fr}}
+  .card{background:#f7f9fc;border-radius:10px;padding:16px;border:1px solid #e2e8f0}
+  .card h4{color:#1a3a5c;margin-bottom:6px}
+  .card.bordered-left{border-left:4px solid #2b6cb0}
+  .card.green{border-left:4px solid #38a169;background:#f0fff4}
+  .card.orange{border-left:4px solid #dd6b20;background:#fffaf0}
+  .card.red{border-left:4px solid #e53e3e;background:#fff5f5}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+  th,td{padding:10px 14px;border:1px solid #e2e8f0;text-align:left;vertical-align:top}
+  th{background:#edf2f7;color:#1a3a5c;font-weight:600}
+  tr:nth-child(even) td{background:#f7f9fc}
+  .tag{display:inline-block;padding:3px 12px;border-radius:14px;font-size:.78rem;font-weight:600;margin:2px}
+  .tag-blue{background:#bee3f8;color:#2b6cb0}.tag-green{background:#c6f6d5;color:#276749}
+  .tag-red{background:#fed7d7;color:#9b2c2c}.tag-orange{background:#feebc8;color:#9c4221}
+  .big-number{font-size:2.8rem;font-weight:800;color:#2b6cb0;line-height:1}
+  .big-number .unit{font-size:1rem;font-weight:400;color:#5a6a7a}
+  .stat-row{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;margin:16px 0}
+  .stat-item{text-align:center}
+  .btn{padding:10px 24px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;display:inline-block}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:#2b6cb0;color:#fff}.btn-primary:hover{background:#1a4f8b}
+  .btn-green{background:#38a169;color:#fff}.btn-green:hover{background:#2f855a}
+  .btn-orange{background:#dd6b20;color:#fff}.btn-orange:hover{background:#c05621}
+  .btn-gray{background:#e2e8f0;color:#2d3748}.btn-gray:hover{background:#cbd5e1}
+  .progress-bar{height:8px;background:#edf2f7;border-radius:4px;margin:14px 0;overflow:hidden}
+  .progress-bar .fill{height:100%;background:linear-gradient(90deg,#2b6cb0,#38a169);border-radius:4px;transition:width .5s;width:0}
+  .score-display{text-align:center;font-size:.95rem;font-weight:600;color:#2d3748;margin:8px 0}
+  .quiz-q{margin:16px 0;padding:16px;background:#f7f9fc;border-radius:10px;border:1px solid #e2e8f0}
+  .quiz-q .q-text{font-weight:600;margin-bottom:10px;font-size:.95rem}
+  .quiz-opt{display:block;width:100%;text-align:left;padding:9px 14px;margin:4px 0;border:2px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer;font-size:.9rem;transition:border-color .2s,background .2s}
+  .quiz-opt:hover{border-color:#90cdf4;background:#ebf8ff}
+  .quiz-opt.correct{border-color:#38a169;background:#c6f6d5}
+  .quiz-opt.incorrect{border-color:#e53e3e;background:#fed7d7}
+  .quiz-opt:disabled{cursor:default}
+  .quiz-fb{margin-top:8px;font-size:.88rem;font-weight:600;display:none}
+  .quiz-fb.show{display:block}
+  .quiz-expl{margin-top:4px;font-size:.85rem;color:#4a5568;font-weight:400;display:none}
+  .quiz-expl.show{display:block}
+  footer{text-align:center;padding:16px;color:#a0aec0;font-size:.78rem;border-top:1px solid #e2e8f0}
+  .text-center{text-align:center}
+  .mt-sm{margin-top:8px}.mt-md{margin-top:14px}
+  .timeline{position:relative;padding-left:28px;margin:14px 0}
+  .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:3px;background:#bee3f8;border-radius:2px}
+  .timeline-item{position:relative;margin-bottom:16px}
+  .timeline-item::before{content:'';position:absolute;left:-24px;top:4px;width:14px;height:14px;background:#2b6cb0;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #2b6cb0}
+  .timeline-item.done::before{background:#38a169;box-shadow:0 0 0 2px #38a169}
+  .timeline-item h4{margin:0 0 4px;font-size:.95rem;color:#1a3a5c}
+  .timeline-item p{font-size:.88rem;color:#4a5568;margin:0}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Prostatakrebs-Früherkennung</h1>
+    <p>Wichtiges Wissen für die MFA-Praxis – Lernfeld 08, Lernsituation 02</p>
+  </header>
+
+  <div class="tabs">
+    <button class="active" data-tab="tab0">Informationen</button>
+    <button data-tab="tab1">Ablauf</button>
+    <button data-tab="tab2">Wichtig für MFA</button>
+    <button data-tab="tab3">Quiz</button>
+  </div>
+
+  <!-- TAB 0: INFORMATIONEN -->
+  <div class="tab-content active" id="tab0">
+    <h2>Was ist Prostatakrebs?</h2>
+    <div class="highlight pink">
+      <strong>Definition:</strong> Das Prostatakarzinom ist eine bösartige Wucherung der Prostata. Es ist die <strong>häufigste Krebserkrankung des Mannes</strong> in Deutschland.
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-item"><div class="big-number">60.000</div><p style="font-size:.88rem">Neuerkrankungen / Jahr</p></div>
+      <div class="stat-item"><div class="big-number">15.000</div><p style="font-size:.88rem">Todesfälle / Jahr</p></div>
+      <div class="stat-item"><div class="big-number">72 <span class="unit">J.</span></div><p style="font-size:.88rem">Durchschnittsalter</p></div>
+      <div class="stat-item"><div class="big-number">91 <span class="unit">%</span></div><p style="font-size:.88rem">5-Jahres-Überleben</p></div>
+    </div>
+
+    <h2>Warum ist Früherkennung so wichtig?</h2>
+    <div class="two-cols">
+      <div class="card green">
+        <h4>Gute Nachricht</h4>
+        <ul>
+          <li>Im <strong>Frühstadium</strong> ist Prostatakrebs <strong>sehr gut heilbar</strong></li>
+          <li>3 von 4 Tumoren werden frühzeitig entdeckt</li>
+          <li>91 % der Patienten überleben mindestens 5 Jahre</li>
+          <li>Bei Früherkennung oft <strong>keine aggressive Therapie</strong> nötig</li>
+        </ul>
+      </div>
+      <div class="card red">
+        <h4>Warum dann nicht einfach warten?</h4>
+        <ul>
+          <li>Im <strong>Frühstadium</strong> gibt es <strong>keine Symptome</strong></li>
+          <li>Erst bei fortgeschrittenem Krebs treten Beschwerden auf</li>
+          <li>Dann sind oft schon <strong>Metastasen</strong> vorhanden</li>
+          <li>Die Heilungschancen sinken drastisch</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight green">
+      <strong>Kernbotschaft:</strong> Warten Sie nicht auf Symptome! Regelmäßige Vorsorge ab dem 45. Lebensjahr rettet Leben.
+    </div>
+
+    <h2>Risikofaktoren</h2>
+    <table>
+      <tr><th>Risikofaktor</th><th>Erklärung</th><th>Beeinflussbar?</th></tr>
+      <tr><td><strong>Alter</strong> (&gt; 50 J.)</td><td>Hauptfaktor; steigendes Alter = steigendes Risiko</td><td><span class="tag tag-red">Nein</span></td></tr>
+      <tr><td><strong>Familiäre Vorbelastung</strong></td><td>Risiko steigt bei betroffenen Vätern, Brüdern, Onkeln</td><td><span class="tag tag-red">Nein</span></td></tr>
+      <tr><td><strong>Genetische Faktoren</strong></td><td>Vererbbare Mutationen (z.B. BRCA1/BRCA2)</td><td><span class="tag tag-red">Nein</span></td></tr>
+      <tr><td><strong>Testosteron</strong></td><td>Hormon treibt Tumorwachstum; ohne Testosteron kein Karzinom</td><td><span class="tag tag-red">Nein</span></td></tr>
+      <tr><td><strong>Lebensstil</strong></td><td>Rauchen, Übergewicht, Bewegungsmangel, ungesunde Ernährung</td><td><span class="tag tag-green">Ja</span></td></tr>
+      <tr><td><strong>Chronische Entzündungen</strong></td><td>Prostatitis als möglicher Risikofaktor (diskutiert)</td><td><span class="tag tag-orange">Teilweise</span></td></tr>
+    </table>
+
+    <h2>Wer hat Anspruch auf Früherkennung?</h2>
+    <div class="two-cols">
+      <div class="card bordered-left">
+        <h4>Gesetzliche Früherkennung (Kasse)</h4>
+        <ul>
+          <li><strong>Ab 45 Jahren</strong>, einmal jährlich</li>
+          <li><strong>Kostenfrei</strong> für gesetzlich Versicherte</li>
+          <li>Beinhaltet: <strong>DRU</strong> (digital-rektale Untersuchung)</li>
+          <li>Zusätzlich: Tastung der Genitalien &amp; Leistenlymphknoten</li>
+        </ul>
+      </div>
+      <div class="card orange">
+        <h4>PSA-Test (Eigenleistung)</h4>
+        <ul>
+          <li><strong>Nicht</strong> in der gesetzlichen Vorsorge enthalten</li>
+          <li>Patient zahlt selbst (ca. 15–30 €)</li>
+          <li>Empfehlung: Ab 45 Jahren als <strong>Zusatztest</strong></li>
+          <li>Wichtig für <strong>Verlaufskontrollen</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight warn">
+      <strong>MFA-Hinweis:</strong> Viele Männer scheuen sich vor der Untersuchung. Aktive Ansprache und Aufklärung in der Praxis sind essenziell!
+    </div>
+  </div>
+
+  <!-- TAB 1: ABLAUF -->
+  <div class="tab-content" id="tab1">
+    <h2>Ablauf der Früherkennungsuntersuchung</h2>
+    <p>So läuft die Vorsorge für Prostatakrebs typischerweise ab:</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>1. Terminvereinbarung &amp; Vorbereitung</h4>
+        <p>Patient meldet sich zur Vorsorge an (ab 45 J.). MFA bereitet vor: Aufklärungsblätter, Untersuchungsmaterial.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2. Anamnese &amp; PSA-Blutabnahme</h4>
+        <p><strong>Zuerst:</strong> PSA-Blutabnahme! Danach erst die DRU (sonst falsch erhöhter Wert). Fragen nach Beschwerden, Vorerkrankungen, Medikamenten.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>3. Digital-rektale Untersuchung (DRU)</h4>
+        <p>Arzt tastet die Prostata mit dem Finger durch den After ab. Beurteilung: Größe, Konsistenz, Symmetrie, Knoten.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>4. Beurteilung &amp; Aufklärung</h4>
+        <p>Arzt bespricht Befunde mit Patient. Bei Auffälligkeiten: Nächste Schritte besprechen (Biopsie, MRT).</p>
+      </div>
+      <div class="timeline-item done">
+        <h4>5. Dokumentation &amp; Folgetermin</h4>
+        <p>MFA dokumentiert Befunde, vereinbart nächsten Termin (jährlich), motiviert zur regelmäßigen Vorsorge.</p>
+      </div>
+    </div>
+
+    <h2>Untersuchungsmethoden im Detail</h2>
+    <table>
+      <tr><th>Methode</th><th>Was wird gemacht?</th><th>Was wird festgestellt?</th></tr>
+      <tr><td><strong>DRU</strong></td><td>Finger durch After zur Prostata-Tastung</td><td>Größe, Konsistenz, Knoten, Schmerzhaftigkeit</td></tr>
+      <tr><td><strong>PSA-Test</strong></td><td>Blutabnahme, Bestimmung des PSA-Werts</td><td>Erhöhung kann auf Krebs, BPH oder Entzündung hindeuten</td></tr>
+      <tr><td><strong>Ultraschall</strong></td><td>Transrektal (TRUS) oder abdominal</td><td>Volumen, Struktur, Restharn</td></tr>
+      <tr><td><strong>MRT</strong></td><td>Magnetresonanztomographie der Prostata</td><td>Verdächtige Areale genauer beurteilen</td></tr>
+      <tr><td><strong>Biopsie</strong></td><td>Gewebeprobe aus der Prostata</td><td><strong>Einzige sichere Diagnose</strong> (Karzinom ja/nein)</td></tr>
+    </table>
+
+    <div class="highlight pink">
+      <strong>Wichtig:</strong> Die <strong>Prostatabiopsie</strong> ist die einzige Methode, um ein Prostatakarzinom sicher nachzuweisen oder auszuschließen!
+    </div>
+
+    <h2>Der PSA-Wert – richtig interpretieren</h2>
+    <div class="two-cols">
+      <div class="card">
+        <h4>Was ist PSA?</h4>
+        <ul>
+          <li><strong>Prostata-spezifisches Antigen</strong> – ein Eiweiß</li>
+          <li>Wird in der Prostata produziert</li>
+          <li>Gelangt in geringen Mengen ins Blut</li>
+          <li><strong>Tumormarker</strong> (nicht spezifisch für Krebs!)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Wann ist PSA erhöht?</h4>
+        <ul>
+          <li><span class="tag tag-red">Prostatakarzinom</span></li>
+          <li><span class="tag tag-orange">BPH (gutartige Vergrößerung)</span></li>
+          <li><span class="tag tag-blue">Prostatitis (Entzündung)</span></li>
+          <li><span class="tag tag-blue">Nach DRU</span></li>
+          <li><span class="tag tag-blue">Nach Radfahren</span></li>
+          <li><span class="tag tag-blue">Nach Ejakulation</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight warn">
+      <strong>MFA-Merkregel:</strong> PSA immer <strong>VOR</strong> der DRU abnehmen! Patient sollte 48 Stunden vorher nicht Rad fahren und am Vorabend nicht ejakulieren.
+    </div>
+  </div>
+
+  <!-- TAB 2: WICHTIG FÜR MFA -->
+  <div class="tab-content" id="tab2">
+    <h2>Ihre Rolle als MFA</h2>
+    <p>Als MFA sind Sie oft die <strong>erste Ansprechperson</strong> und haben eine Schlüsselrolle in der Früherkennung.</p>
+
+    <div class="two-cols">
+      <div class="card bordered-left">
+        <h4>Vorbereitung der Untersuchung</h4>
+        <ul>
+          <li>Terminvereinbarung (Vorsorge ab 45)</li>
+          <li>Patientenaufklärung über Ablauf</li>
+          <li>PSA-Blutabnahme <strong>vor</strong> DRU einplanen</li>
+          <li>Material bereitlegen (Handschuhe, Gleitgel)</li>
+          <li>Urinbecher für Urinuntersuchung bereitstellen</li>
+        </ul>
+      </div>
+      <div class="card bordered-left" style="border-left-color:#38a169">
+        <h4>Patientenbetreuung</h4>
+        <ul>
+          <li>Ängste nehmen (kurz, aber unangenehm)</li>
+          <li>Nachfragen zu Symptomen (IPSS-Fragebogen)</li>
+          <li>Aufklärung über Wichtigkeit der Vorsorge</li>
+          <li>Bei Diagnose: einfühlsame Begleitung</li>
+          <li>Nachsorgetermine einladen</li>
+          <li>Bei Auffälligkeiten an Urologen verweisen</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Häufige Fragen der Patienten</h2>
+    <table>
+      <tr><th>Frage</th><th>Mögliche Antwort der MFA</th></tr>
+      <tr><td>„Ist die Untersuchung schmerzhaft?"</td><td>„Die DRU ist kurz und nur leicht unangenehm. Der Arzt führt einen behandschten Finger mit Gleitgel ein."</td></tr>
+      <tr><td>„Muss ich den PSA-Test bezahlen?"</td><td>„Die DRU ist kostenlos. Der PSA-Test ist eine Eigenleistung, kostet ca. 15–30 € und lohnt sich zur zusätzlichen Absicherung."</td></tr>
+      <tr><td>„Was passiert bei einem auffälligen Befund?"</td><td>„Wir klären die nächsten Schritte gemeinsam. Gegebenenfalls erfolgt eine Biopsie zur sicheren Abklärung."</td></tr>
+      <tr><td>„Wie oft sollte ich kommen?"</td><td>„Ab 45 Jahren einmal jährlich. Bei familiärer Vorbelastung ggf. früher und häufiger."</td></tr>
+      <tr><td>„Kann ich Prostatakrebs vorbeugen?"</td><td>„Keine spezifische Prävention bekannt. Gesunder Lebensstil (Bewegung, Ernährung, kein Rauchen) hilft allgemein."</td></tr>
+    </table>
+
+    <h2>Fehlerquellen vermeiden</h2>
+    <div class="two-cols">
+      <div class="card red">
+        <h4>Diese Fehler vermeiden!</h4>
+        <ul>
+          <li>PSA <strong>nach</strong> DRU abnehmen → falsch erhöht!</li>
+          <li>PSA <strong>ohne Hinweis</strong> auf Vorlaufzeit messen</li>
+          <li>Patient nicht über Ablauf aufklären</li>
+          <li>Vorsorge nicht aktiv anbieten</li>
+          <li>Befunde nicht ordnungsgemäß dokumentieren</li>
+        </ul>
+      </div>
+      <div class="card green">
+        <h4>Richtig machen!</h4>
+        <ul>
+          <li>PSA <strong>vor</strong> DRU abnehmen</li>
+          <li>Patient über 48h Radfahrverzicht informieren</li>
+          <li>Aufklärungsbblätter aushändigen</li>
+          <li>Aktiv auf Männer zugehen</li>
+          <li>Alles dokumentieren und Folgetermine planen</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight green">
+      <strong>Key Message:</strong> Ihre professionelle und einfühlsame Betreuung kann Patienten motivieren, zur Vorsorge zu gehen. Sie retten damit Leben!
+    </div>
+  </div>
+
+  <!-- TAB 3: QUIZ -->
+  <div class="tab-content" id="tab3">
+    <h2>Quiz: Testen Sie Ihr Wissen!</h2>
+    <p>Wählen Sie die richtige Antwort. Nach jeder Auswahl sehen Sie, ob Sie richtig lagen – mit Erklärung.</p>
+    <div class="progress-bar"><div class="fill" id="quizProgress"></div></div>
+    <div class="score-display" id="quizScore"></div>
+    <div id="quizContainer"></div>
+    <div class="text-center mt-md">
+      <button class="btn btn-green" onclick="resetQuiz()">Quiz zurücksetzen</button>
+    </div>
+  </div>
+
+  <footer>
+    Inhalte für die MFA-Ausbildung – Lernfeld 08, Lernsituation 02
+  </footer>
+</div>
+
+<script>
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+  });
+});
+
+const quizData=[
+  {q:'Ab welchem Alter haben Männer Anspruch auf die gesetzliche Früherkennung für Prostatakrebs?',
+   o:['Ab 40 Jahren','Ab 45 Jahren','Ab 50 Jahren','Ab 55 Jahren'],c:1,
+   ex:'Die gesetzliche Früherkennung beginnt ab dem 45. Lebensjahr mit einer jährlichen DRU.'},
+  {q:'Was ist PSA?',
+   o:['Ein Medikament','Prostata-spezifisches Antigen (Tumormarker)','Ein Operationsverfahren','Ein Impfstoff'],c:1,
+   ex:'PSA steht für Prostata-spezifisches Antigen – ein Eiweiß, das in der Prostata produziert wird und als Tumormarker dient.'},
+  {q:'Was ist die wichtigste Regel bei der PSA-Blutabnahme?',
+   o:['PSA immer nach der DRU messen','PSA immer vor der DRU abnehmen','PSA nur morgens messen','PSA nur bei Beschwerden testen'],c:1,
+   ex:'Die PSA-Blutabnahme erfolgt IMMER vor der DRU, da die Tastuntersuchung den PSA-Wert fälschlich erhöhen kann.'},
+  {q:'Was passiert, wenn der PSA-Wert nach einer DRU gemessen wird?',
+   o:['Der Wert ist zu niedrig','Der Wert ist normal','Der Wert ist fälschlich erhöht','Der Wert ist ungenau'],c:2,
+   ex:'Durch die mechanische Belastung bei der DRU gelangt mehr PSA ins Blut – der Wert ist dann falsch erhöht.'},
+  {q:'Welche Methode kann Prostatakrebs SICHER nachweisen?',
+   o:['PSA-Test','DRU','Prostatabiopsie','Ultraschall'],c:2,
+   ex:'Nur die Prostatabiopsie (Gewebeprobe) kann ein Prostatakarzinom sicher diagnostizieren oder ausschließen.'},
+  {q:'Wie hoch ist die 5-Jahres-Überlebensrate bei Prostatakrebs?',
+   o:['Ca. 50 %','Ca. 70 %','Ca. 91 %','Ca. 99 %'],c:2,
+   ex:'Die 5-Jahres-Überlebensrate liegt bei ca. 91 % – besonders gut bei Früherkennung.'},
+  {q:'Welcher Tastbefund (DRU) spricht für Prostatakrebs?',
+   o:['Glatt, prall-elastisch','Weich, schmerzlos','Derb, knotig, unregelmäßig','Vergrößert, aber elastisch'],c:2,
+   ex:'Ein derber, knotiger, unregelmäßiger Befund ist verdächtig für ein Karzinom. BPH ist hingegen glatt und elastisch.'},
+  {q:'Was ist ein Grund, warum Patienten die Früherkennung scheuen?',
+   o:['Zu teuer','Schmerzen bei der Untersuchung','Angst vor dem Befund / Scham','Zu weit entfernt'],c:2,
+   ex:'Häufigste Gründe sind Scham und Angst vor dem Ergebnis. Einfühlsame Aufklärung durch die MFA hilft!'},
+  {q:'Was sollte ein Patient 48 Stunden vor der PSA-Bestimmung vermeiden?',
+   o:['Essen','Trinken','Radfahren','Schlafen'],c:2,
+   ex:'Radfahren kann den PSA-Wert erhöhen. Ebenso sollte der Patient am Vorabend nicht ejakulieren.'},
+  {q:'Was ist Active Surveillance?',
+   o:['Sofortige Operation','Aktive Überwachung mit regelmäßigen Kontrollen','Bestrahlung','Chemotherapie'],c:1,
+   ex:'Active Surveillance bedeutet: Beobachten ohne sofortige Therapie. Regelmäßige Kontrollen stellen sicher, dass rechtzeitig eingegriffen wird.'},
+  {q:'Ab welchem Alter ist die gesetzliche Früherkennung kostenlos?',
+   o:['Ab 35 Jahren','Ab 40 Jahren','Ab 45 Jahren','Ab 50 Jahren'],c:2,
+   ex:'Ab 45 Jahren haben Männer Anspruch auf eine jährliche, kostenfreie Früherkennungsuntersuchung (inkl. DRU).'},
+  {q:'Was gehört NICHT zur gesetzlichen Früherkennung?',
+   o:['DRU','Tastung der Genitalien','PSA-Test','Tastung der Leistenlymphknoten'],c:2,
+   ex:'Der PSA-Test ist keine Leistung der gesetzlichen Krankenkasse – er ist Eigenleistung des Patienten.'},
+  {q:'Was ist eine mögliche Folge eines unbehandelten Prostatakarzinoms?',
+   o:['BPH','Knochenmetastasen mit Rückenschmerzen','Herzinfarkt','Diabetes'],c:1,
+   ex:'Fortgeschrittener Prostatakrebs kann Tochtergeschwülste (Metastasen) in den Knochen bilden – typisch sind Rücken- und Ischiasschmerzen.'},
+  {q:'Welche Rolle hat die MFA bei der Früherkennung?',
+   o:['Sie führt die DRU selbst durch','Sie bereitet vor, betreut und motiviert zur Vorsorge','Sie verschreibt Medikamente','Sie diagnostiziert allein'],c:1,
+   ex:'Die MFA bereitet die Untersuchung vor, betreut den Patienten und motiviert aktiv zur regelmäßigen Vorsorge.'},
+  {q:'Was ist der erste Schritt bei der Vorsorgeuntersuchung?',
+   o:['DRU','PSA-Blutabnahme','Ultraschall','Biopsie'],c:1,
+   ex:'Zuerst erfolgt die PSA-Blutabnahme, danach erst die DRU. So wird ein falsch erhöhter PSA-Wert vermieden.'},
+  {q:'Was bedeutet „Hämaturie"?',
+   o:['Blut im Stuhl','Blut im Urin','Blut im Speichel','Blut im Sperma'],c:1,
+   ex:'Hämaturie = Blut im Urin. Ein mögliches Zeichen für Prostatakrebs im fortgeschrittenen Stadium.'},
+  {q:'Bei wem sollte die Früherkennung FRÜHER als mit 45 beginnen?',
+   o:['Bei Rauchern','Bei Übergewichtigen','Bei familiärer Vorbelastung','Bei Sportlern'],c:2,
+   ex:'Bei familiärer Vorbelastung (Vater, Bruder mit Prostatakrebs) sollte die Früherkennung früher beginnen.'}
+];
+
+let quizAnswered=[], quizCorrect=0;
+
+function renderQuiz(){
+  const c=document.getElementById('quizContainer');
+  c.innerHTML='';
+  quizAnswered=new Array(quizData.length).fill(false);
+  quizCorrect=0;
+  quizData.forEach((q,i)=>{
+    const d=document.createElement('div');
+    d.className='quiz-q';d.id='q-'+i;
+    let h=`<div class="q-text">${i+1}. ${q.q}</div>`;
+    q.o.forEach((o,j)=>{h+=`<button class="quiz-opt" onclick="answerQuiz(${i},${j})">${o}</button>`;});
+    h+=`<div class="quiz-fb" id="fb-${i}"></div><div class="quiz-expl" id="ex-${i}">${q.ex}</div>`;
+    d.innerHTML=h;c.appendChild(d);
+  });
+  updateProgress();
+}
+
+function answerQuiz(qi,oi){
+  if(quizAnswered[qi])return;
+  const q=quizData[qi];
+  document.querySelectorAll('#q-'+qi+' .quiz-opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.c)b.classList.add('correct');
+    else if(i===oi)b.classList.add('incorrect');
+  });
+  quizAnswered[qi]=true;
+  if(oi===q.c)quizCorrect++;
+  const fb=document.getElementById('fb-'+qi);
+  fb.className='quiz-fb show';
+  fb.style.color=oi===q.c?'#38a169':'#e53e3e';
+  fb.textContent=oi===q.c?'Richtig!':'Falsch. Richtige Antwort: '+q.o[q.c];
+  document.getElementById('ex-'+qi).className='quiz-expl show';
+  updateProgress();
+}
+
+function updateProgress(){
+  const a=quizAnswered.filter(x=>x).length;
+  document.getElementById('quizProgress').style.width=(a/quizData.length*100)+'%';
+  document.getElementById('quizScore').textContent=quizCorrect+' von '+a+' richtig beantwortet ('+quizData.length+' Fragen gesamt)';
+}
+
+function resetQuiz(){renderQuiz();}
+renderQuiz();
+</script>
+</body>
+</html>
