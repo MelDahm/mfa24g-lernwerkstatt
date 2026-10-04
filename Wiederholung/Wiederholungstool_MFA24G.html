@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wiederholungstool MFA24G</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #e2e8f0; min-height: 100vh; display: flex; justify-content: center; padding: 16px; }
+.app { max-width: 960px; width: 100%; }
+.hidden { display: none !important; }
+
+/* HEADER */
+.header { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; flex-wrap: wrap; gap: 10px; }
+.header h1 { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header .sub { font-size: 13px; color: #94a3b8; }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn { padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary { background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(59,130,246,0.4); }
+.btn-secondary { background: #334155; color: #e2e8f0; }
+.btn-secondary:hover { background: #475569; }
+.btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+.btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+.btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+.btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(239,68,68,0.4); }
+.btn-ghost { background: transparent; color: #94a3b8; border: 1px solid #334155; }
+.btn-ghost:hover { background: #334155; color: #e2e8f0; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+/* CARDS */
+.card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.card-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+/* DASHBOARD */
+.hero { text-align: center; padding: 40px 20px; }
+.hero h2 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.hero p { color: #94a3b8; max-width: 500px; margin: 0 auto 24px; }
+.hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+.lernfeld-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.lernfeld-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 18px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+.lernfeld-card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+.lernfeld-card .icon { font-size: 28px; margin-bottom: 8px; }
+.lernfeld-card .name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.lernfeld-card .desc { font-size: 12px; color: #94a3b8; margin-bottom: 8px; }
+.lernfeld-card .stats { display: flex; gap: 10px; font-size: 11px; color: #64748b; }
+.lernfeld-card .stats span { display: flex; align-items: center; gap: 3px; }
+.lernfeld-card .progress-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.lernfeld-card .progress-dot.green { background: #10b981; }
+.lernfeld-card .progress-dot.yellow { background: #f59e0b; }
+.lernfeld-card .progress-dot.gray { background: #475569; }
+
+/* PROGRESS */
+.progress-bar-wrap { height: 6px; background: #334155; border-radius: 3px; overflow: hidden; margin: 8px 0; }
+.progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; background: linear-gradient(90deg, #3b82f6, #a78bfa); }
+
+/* QUIZ */
+.quiz-area { animation: fadeIn 0.3s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.question-text { font-size: 18px; font-weight: 600; margin-bottom: 16px; line-height: 1.5; }
+.question-meta { font-size: 12px; color: #64748b; margin-bottom: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+.question-meta .tag { background: #334155; padding: 2px 10px; border-radius: 20px; }
+.options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.option { padding: 14px 18px; border: 2px solid #334155; border-radius: 12px; cursor: pointer; transition: all 0.2s; background: #0f172a; font-size: 15px; }
+.option:hover { border-color: #6366f1; background: #1a2332; }
+.option.selected { border-color: #3b82f6; background: #1e3a5f; }
+.option.correct { border-color: #10b981; background: #064e3b; }
+.option.wrong { border-color: #ef4444; background: #450a0a; }
+.option.reveal-correct { border-color: #10b981; background: #064e3b; opacity: 0.7; }
+.option .check { float: right; }
+.feedback-box { padding: 14px; border-radius: 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; display: none; }
+.feedback-box.show { display: block; }
+.feedback-box.correct { background: #064e3b; border-left: 4px solid #10b981; color: #a7f3d0; }
+.feedback-box.wrong { background: #450a0a; border-left: 4px solid #ef4444; color: #fca5a5; }
+
+/* FLASHCARDS */
+.flashcard { perspective: 1000px; margin: 20px 0; min-height: 200px; }
+.flashcard-inner { position: relative; width: 100%; min-height: 220px; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back { position: absolute; top: 0; left: 0; width: 100%; min-height: 220px; backface-visibility: hidden; border-radius: 16px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.flashcard-front { background: linear-gradient(135deg, #1e3a5f, #312e81); border: 1px solid #3b82f6; }
+.flashcard-back { background: linear-gradient(135deg, #064e3b, #065f46); border: 1px solid #10b981; transform: rotateY(180deg); }
+.flashcard-front .label { font-size: 12px; color: #93c5fd; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+.flashcard-front .text { font-size: 18px; font-weight: 600; }
+.flashcard-back .text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.flashcard-back .explanation { font-size: 14px; color: #a7f3d0; max-width: 400px; }
+.flashcard-hint { text-align: center; font-size: 12px; color: #64748b; margin-top: -12px; margin-bottom: 12px; }
+
+/* TIMER */
+.timer-display { text-align: center; font-size: 48px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 10px 0; }
+.timer-display.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* FOLDER BROWSER */
+.folder-tree { font-size: 14px; }
+.folder-tree .folder { margin: 4px 0; }
+.folder-tree .folder-label { padding: 6px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+.folder-tree .folder-label:hover { background: #334155; }
+.folder-tree .folder-children { padding-left: 24px; display: none; }
+.folder-tree .folder.open > .folder-children { display: block; }
+.folder-tree .file { padding: 4px 10px 4px 32px; color: #94a3b8; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.folder-tree .file:hover { color: #e2e8f0; }
+
+/* MATCHING GAME */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+.match-item { padding: 12px 16px; border: 2px solid #334155; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.2s; font-size: 14px; background: #0f172a; }
+.match-item:hover { border-color: #6366f1; }
+.match-item.selected { border-color: #f59e0b; background: #451a03; }
+.match-item.matched { border-color: #10b981; background: #064e3b; cursor: default; }
+
+/* TABS */
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab { padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; background: #334155; color: #94a3b8; border: none; }
+.tab:hover { background: #475569; color: #e2e8f0; }
+.tab.active { background: #3b82f6; color: #fff; }
+
+/* RESULTS */
+.result-screen { text-align: center; padding: 30px 20px; }
+.result-screen .big-num { font-size: 64px; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.result-screen .sub-text { font-size: 16px; color: #94a3b8; margin: 8px 0 20px; }
+.result-screen .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 16px 0; }
+.result-screen .detail-item { background: #334155; padding: 14px; border-radius: 10px; }
+.result-screen .detail-item .num { font-size: 24px; font-weight: 700; }
+.result-screen .detail-item .lbl { font-size: 12px; color: #94a3b8; }
+
+/* SCORE STARS */
+.stars { font-size: 32px; letter-spacing: 4px; margin: 8px 0; }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .lernfeld-grid { grid-template-columns: 1fr; }
+  .match-grid { grid-template-columns: 1fr; }
+  .timer-display { font-size: 36px; }
+  .hero h2 { font-size: 22px; }
+  .flashcard-front, .flashcard-back { padding: 20px; }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+/* ACHIEVEMENT POPUP */
+.achievement { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #1e3a5f, #312e81); border: 1px solid #3b82f6; border-radius: 14px; padding: 16px 20px; z-index: 100; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideIn 0.4s; max-width: 320px; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.achievement .title { font-size: 14px; font-weight: 700; }
+.achievement .desc { font-size: 12px; color: #93c5fd; }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+// ====================================================================
+// DATA: LERNFELDER & FRAGEN
+// ====================================================================
+const LERNFELDER = [
+  { id: 'lf01', icon: '🏥', name: 'LF01 – Praxis & Patienten', desc: 'Arbeitsrecht, Hygiene, Arbeitsschutz, Gesundheitssystem, Praxisorganisation', color: '#3b82f6',
+    files: ['Arbeitsschutz.pptx','Hygiene Händedesinfektion','Checkliste erstellen','Gesundheitsdienst','Beendigung Ausbildung','Corporate Identity'],
+    chapters: [
+      { title: 'Berufsausbildung', emoji: '📋' },
+      { title: 'Arbeitsschutz & Sicherheit', emoji: '🛡️' },
+      { title: 'Hygiene & Händedesinfektion', emoji: '🧼' },
+      { title: 'Gesundheitssystem & ÖGD', emoji: '🏛️' },
+      { title: 'Praxisorganisation', emoji: '📁' }
+    ]},
+  { id: 'lf03', icon: '🦠', name: 'LF03 – Infektionskrankheiten', desc: 'Viren, Bakterien, Hepatitis, D-Arzt, Impfungen, MRSA, Antibiotika, Blut', color: '#10b981',
+    files: ['Infektionskrankheiten','Virussteckbrief','Hepatitis B','Antibiotika MRSA','Blut'],
+    chapters: [
+      { title: 'Infektionslehre', emoji: '🔬' },
+      { title: 'Viren & Bakterien', emoji: '🦠' },
+      { title: 'Hepatitis & Impfungen', emoji: '💉' },
+      { title: 'D-Arzt & Berufsgenossenschaft', emoji: '👨‍⚕️' },
+      { title: 'Antibiotika & MRSA', emoji: '💊' }
+    ]},
+  { id: 'lf06', icon: '📦', name: 'LF06 – Waren beschaffen & verwalten', desc: 'Kaufverträge, Kaufvertragsstörungen, Mängel, Verzug, Zahlung', color: '#f59e0b',
+    files: ['Angebot & Rechnung','Mängelarten','Nicht-Rechtzeitig-Lieferung','Verzugszinsen','Annahmeverzug'],
+    chapters: [
+      { title: 'Kaufvertrag & Mängel', emoji: '📝' },
+      { title: 'Nicht-Rechtzeitig-Lieferung', emoji: '⏰' },
+      { title: 'Zahlungsverzug', emoji: '💰' },
+      { title: 'Annahmeverzug', emoji: '❌' },
+      { title: 'Merkblatt & Prüfungsvorbereitung', emoji: '📚' }
+    ]},
+  { id: 'lf08', icon: '🫀', name: 'LF08 – Harnsystem', desc: 'Anatomie Harnwege, Urinuntersuchung, Teststreifen, Harnwegsinfekte', color: '#a78bfa',
+    files: ['Anatomie Harnorgane','Urinbildung','Mittelstrahlurin','Urin-Teststreifen','Therapie HWI'],
+    chapters: [
+      { title: 'Anatomie der Harnorgane', emoji: '🔍' },
+      { title: 'Urinbildung & Niere', emoji: '🫀' },
+      { title: 'Mittelstrahlurin & Teststreifen', emoji: '🧪' },
+      { title: 'Harnwegsinfekte (HWI)', emoji: '🦠' },
+      { title: 'Antibiotika-Therapie', emoji: '💊' }
+    ]},
+  { id: 'zwischenpruefung', icon: '🎯', name: 'Zwischenprüfung', desc: 'Gemischte Fragen aus LF01–LF08 zur Prüfungsvorbereitung', color: '#f97316',
+    files: ['Instrumentenkreislauf','Wiederholung LF01'],
+    chapters: [
+      { title: 'Gemischte Fragen LF01–LF08', emoji: '🎯' },
+      { title: 'Instrumentenkreislauf', emoji: '🔄' },
+      { title: 'Prüfungssimulation', emoji: '📝' }
+    ]}
+];
+
+const FRAGEN = {
+  lf01: [
+    { f: 'Welches Gesetz regelt die duale Berufsausbildung in Deutschland?', a: ['BBiG (Berufsbildungsgesetz)', 'BGB', 'JArbSchG', 'ArbSchG'], r: 0, e: 'Das Berufsbildungsgesetz (BBiG) ist die zentrale Rechtsgrundlage für die duale Ausbildung.' },
+    { f: 'Wie lange dauert die Probezeit bei einer Berufsausbildung?', a: ['1 bis 3 Monate', '3 bis 6 Monate', '6 bis 12 Monate', '12 bis 24 Monate'], r: 0, e: 'Die Probezeit beträgt mindestens 1 Monat und höchstens 3 Monate (BBiG §20).' },
+    { f: 'Was versteht man unter dem Öffentlichen Gesundheitsdienst (ÖGD)?', a: ['Private Arztpraxen', 'Staatliche Einrichtungen zum Gesundheitsschutz', 'Krankenkassen', 'Apotheken'], r: 1, e: 'Der ÖGD umfasst staatliche Einrichtungen wie Gesundheitsämter.' },
+    { f: 'Welche Behörde überwacht den Arbeitsschutz in Betrieben?', a: ['Gesundheitsamt', 'Gewerbeaufsichtsamt', 'Finanzamt', 'Berufsgenossenschaft'], r: 1, e: 'Das Gewerbeaufsichtsamt überwacht die Einhaltung des Arbeitsschutzes.' },
+    { f: 'Welche Farbe hat ein Gebotszeichen (muss getragen werden)?', a: ['Rot', 'Gelb', 'Blau', 'Grün'], r: 2, e: 'Gebotszeichen sind blau mit weißem Symbol.' },
+    { f: 'Wie lange muss die hygienische Händedesinfektion mindestens einwirken?', a: ['10 Sekunden', '20 Sekunden', '30 Sekunden', '60 Sekunden'], r: 2, e: 'Die Einwirkzeit beträgt mindestens 30 Sekunden.' },
+    { f: 'Welche Institution führt die gesetzliche Unfallversicherung durch?', a: ['Gesundheitsamt', 'Gewerbeaufsichtsamt', 'Berufsgenossenschaft', 'KV'], r: 2, e: 'Die Berufsgenossenschaften sind die Träger der gesetzlichen Unfallversicherung.' },
+    { f: 'Was ist ein Aufhebungsvertrag?', a: ['Vertragsverlängerung', 'Einvernehmliche Auflösung des Ausbildungsverhältnisses', 'Kündigung durch AG', 'Neuer Ausbildungsvertrag'], r: 1, e: 'Ein Aufhebungsvertrag beendet das Ausbildungsverhältnis einvernehmlich vorzeitig.' },
+    { f: 'Welche drei Bereiche umfasst das Gesundheitswesen?', a: ['Klinik, Praxis, Apotheke', 'Wiederherstellung, Erhaltung, Schutz der Gesundheit', 'Prävention, Diagnostik, Therapie', 'ambulant, stationär, rehabilitativ'], r: 1, e: 'Wiederherstellung, Erhaltung/Förderung und Schutz der Gesundheit.' },
+    { f: 'Wohin gehören Medikamente zur Entsorgung?', a: ['Toilette', 'Restmüll oder Schadstoffsammlung', 'Spüle', 'Praxis-Müll'], r: 1, e: 'Medikamente gehören in den Restmüll oder zur Schadstoffsammlung.' },
+    { f: 'Was ist ein Gestellungsvertrag?', a: ['Mietvertrag für Geräte', 'Arbeitnehmerüberlassung (Leiharbeit)', 'Kaufvertrag', 'Dienstvertrag'], r: 1, e: 'Ein Gestellungsvertrag ist eine Arbeitnehmerüberlassung (Leiharbeit).' },
+    { f: 'Wer ist für die Einhaltung des Jugendarbeitsschutzgesetzes verantwortlich?', a: ['Der Auszubildende', 'Der Arbeitgeber', 'Die Berufsschule', 'Die Eltern'], r: 1, e: 'Der Arbeitgeber ist für die Einhaltung des JArbSchG verantwortlich.' },
+    { f: 'Ab wie viel Jahren dürfen Jugendliche arbeiten?', a: ['13', '15', '16', '18'], r: 1, e: 'Jugendliche im Sinne des JArbSchG sind 15–17 Jahre.' },
+    { f: 'Was versteht man unter "Corporate Identity"?', a: ['Firmenausweis', 'Einheitliches Erscheinungsbild eines Unternehmens', 'Gesellschaftsform', 'Firmenwagen'], r: 1, e: 'Corporate Identity ist das einheitliche Erscheinungsbild und Auftreten eines Unternehmens.' },
+    { f: 'Welche Aufgaben hat die Kassenärztliche Vereinigung (KV)?', a: ['Krankenhäuser verwalten', 'Abrechnung mit Krankenkassen', 'Impfungen durchführen', 'Arzneimittel zulassen'], r: 1, e: 'Die KV ist für die Abrechnung und Sicherstellung der ambulanten Versorgung zuständig.' },
+    { f: 'Wie heißt die Zulassung zur ärztlichen Tätigkeit?', a: ['Approbation', 'Kassenzulassung', 'Staatsexamen', 'Facharztprüfung'], r: 0, e: 'Die Approbation ist die staatliche Zulassung zur ärztlichen Tätigkeit.' },
+    { f: 'Was ist ein MVZ?', a: ['Medizinisches Versorgungszentrum', 'Medizinischer Verwaltungszentrum', 'Medizinisches Vorsorgezentrum', 'Medizinische Verrechnungszone'], r: 0, e: 'Ein MVZ ist ein Medizinisches Versorgungszentrum mit Ärzten verschiedener Fachrichtungen.' },
+    { f: 'Welches GHS-Symbol warnt vor ätzenden Stoffen?', a: ['Totenkopf', 'Ätzwarnung (zwei Testrohre)', 'Flamme', 'Ausrufezeichen'], r: 1, e: 'Das GHS-Symbol mit den zwei Testrohren warnt vor ätzenden Stoffen.' },
+    { f: 'Wie lange müssen Patientenakten aufbewahrt werden?', a: ['5 Jahre', '10 Jahre', '15 Jahre', '20 Jahre'], r: 1, e: 'Patientenakten müssen 10 Jahre aufbewahrt werden.' },
+    { f: 'Wann ist eine außerordentliche Kündigung in der Ausbildung möglich?', a: ['Bei schlechten Noten', 'Bei wichtigem Grund (z.B. Diebstahl)', 'Nach Probezeit immer', 'Bei Krankheit'], r: 1, e: 'Eine fristlose Kündigung ist bei Vorliegen eines wichtigen Grundes möglich.' }
+  ],
+  lf03: [
+    { f: 'Was ist ein D-Arzt?', a: ['Diabetes-Arzt', 'Durchgangsarzt bei Arbeitsunfällen', 'Dermatologe', 'Diagnostiker'], r: 1, e: 'Ein D-Arzt ist für die Versorgung von Arbeitsunfällen zugelassen.' },
+    { f: 'Welcher Übertragungsweg liegt bei einer Kanülenstichverletzung vor?', a: ['Tröpfcheninfektion', 'Parenteral (direkt in den Blutkreislauf)', 'Schmierinfektion', 'Sexualkontakt'], r: 1, e: 'Bei Kanülenstichverletzung gelangen Erreger direkt über die Haut ins Blut (parenteral).' },
+    { f: 'Gegen welche Erreger wirken Antibiotika?', a: ['Viren', 'Bakterien', 'Pilze', 'Parasiten'], r: 1, e: 'Antibiotika wirken nur gegen Bakterien, nicht gegen Viren.' },
+    { f: 'Was bedeutet MRSA?', a: ['Methicillin-resistenter Staphylococcus aureus', 'Multi-resistente Salmonella', 'Mittleres respiratorisches Syndrom', 'Medizinisch relevante Staphylococcus-Allergie'], r: 0, e: 'MRSA ist ein multiresistenter Krankenhauskeim.' },
+    { f: 'Wie wird Hepatitis B hauptsächlich übertragen?', a: ['Über Lebensmittel', 'Tröpfcheninfektion', 'Blut und Körperflüssigkeiten', 'Schmierinfektion'], r: 2, e: 'Hepatitis B wird über infiziertes Blut und Körperflüssigkeiten übertragen.' },
+    { f: 'Welche Impfung wird für medizinisches Personal besonders empfohlen?', a: ['FSME', 'Hepatitis B', 'Gelbfieber', 'Pneumokokken'], r: 1, e: 'Die Hepatitis-B-Impfung ist aufgrund des erhöhten Infektionsrisikos besonders empfohlen.' },
+    { f: 'Was ist die Inkubationszeit?', a: ['Zeit bis zur Genesung', 'Zeit zwischen Ansteckung und Ausbruch', 'Dauer der Impfwirkung', 'Zeitraum der Ansteckungsgefahr'], r: 1, e: 'Die Inkubationszeit ist der Zeitraum von der Ansteckung bis zu ersten Symptomen.' },
+    { f: 'Welche Komplikation kann bei Masern auftreten?', a: ['Herzinfarkt', 'Enzephalitis (Gehirnentzündung)', 'Nierenversagen', 'Leberzirrhose'], r: 1, e: 'Masern können eine Enzephalitis verursachen.' },
+    { f: 'Was ist eine nosokomiale Infektion?', a: ['Angeborene Infektion', 'Im Krankenhaus erworbene Infektion', 'Tierübertragene Infektion', 'Sexuell übertragene Infektion'], r: 1, e: 'Nosokomiale Infektionen werden im Krankenhaus erworben.' },
+    { f: 'Welcher Erreger verursacht Pfeiffersches Drüsenfieber?', a: ['Influenza-Virus', 'Epstein-Barr-Virus (EBV)', 'HI-Virus', 'Rhinovirus'], r: 1, e: 'Das Pfeiffersche Drüsenfieber wird durch das Epstein-Barr-Virus verursacht.' },
+    { f: 'Was versteht man unter "parenteraler Übertragung"?', a: ['Über die Atemwege', 'Direkt in den Blutkreislauf (z.B. Nadelstich)', 'Über die Haut', 'Über Lebensmittel'], r: 1, e: 'Parenteral = direkt in den Blutkreislauf, z.B. durch Kanülenstich.' },
+    { f: 'Welche Schutzmaßnahme ist bei MRSA-Patienten wichtig?', a: ['Keine besonderen Maßnahmen', 'Isolierung und Barrieremaßnahmen', 'Nur Handschuhe', 'Nur Mundschutz'], r: 1, e: 'MRSA-Patienten werden isoliert, es gelten strikte Barrieremaßnahmen.' },
+    { f: 'Was ist ein Antigen?', a: ['Abwehrstoff des Körpers', 'Fremder Stoff, der Immunreaktion auslöst', 'Weißes Blutkörperchen', 'Impfstoff'], r: 1, e: 'Ein Antigen ist ein fremder Stoff, der eine Immunantwort auslöst.' },
+    { f: 'Welche Zellen sind für die Antikörperproduktion zuständig?', a: ['T-Zellen', 'B-Zellen (Plasmazellen)', 'Makrophagen', 'Granulozyten'], r: 1, e: 'B-Zellen (Plasmazellen) produzieren Antikörper.' },
+    { f: 'Was versteht man unter aktiver Immunisierung?', a: ['Spritze mit Antikörpern', 'Körper bildet selbst Antikörper (z.B. Impfung)', 'Passivrauchen', 'Antibiotika-Einnahme'], r: 1, e: 'Bei aktiver Immunisierung (Impfung) bildet der Körper selbst Antikörper.' },
+    { f: 'Was ist der Unterschied zwischen Desinfektion und Sterilisation?', a: ['Das Gleiche', 'Desinfektion reduziert Keime, Sterilisation tötet alle Mikroorganismen', 'Sterilisation ist schwächer', 'Desinfektion tötet immer alle Keime'], r: 1, e: 'Desinfektion reduziert Keime, Sterilisation tötet alle Mikroorganismen inkl. Sporen.' },
+    { f: 'Wie erfolgt die Sterilisation im Autoklaven?', a: ['80°C', '100°C', '121–134°C mit Wasserdampf', '200°C'], r: 2, e: 'Die Sterilisation im Autoklaven erfolgt bei 121–134°C mit gesättigtem Wasserdampf.' },
+    { f: 'Welche Hepatitis-Form wird hauptsächlich fäkal-oral übertragen?', a: ['Hepatitis B', 'Hepatitis A', 'Hepatitis C', 'Hepatitis D'], r: 1, e: 'Hepatitis A wird fäkal-oral übertragen (Schmierinfektion).' },
+    { f: 'Was ist ein Virustatikum?', a: ['Medikament gegen Bakterien', 'Medikament, das Viren hemmt', 'Impfstoff', 'Desinfektionsmittel'], r: 1, e: 'Ein Virustatikum hemmt die Vermehrung von Viren.' },
+    { f: 'Welche Blutbestandteile sind für die Blutgerinnung zuständig?', a: ['Erythrozyten', 'Thrombozyten (Blutplättchen)', 'Leukozyten', 'Plasma'], r: 1, e: 'Thrombozyten sind für die Blutgerinnung zuständig.' }
+  ],
+  lf06: [
+    { f: 'Was versteht man unter Sprechstundenbedarf?', a: ['Medikamente für Privatpraxis', 'Material für Patientenversorgung, über KV abgerechnet', 'Instrumente für OP', 'Büromaterial'], r: 1, e: 'Sprechstundenbedarf wird über die KV abgerechnet.' },
+    { f: 'Welche Mängelarten gibt es beim Kaufvertrag?', a: ['Optische, funktionale, preisliche', 'Beschaffenheits-, Gattungs-, Quantitätsmängel', 'Material-, Produktions-, Lagerschäden', 'Klein-, Mittel-, Großmängel'], r: 1, e: 'Man unterscheidet: Beschaffenheits-, Gattungs- und Quantitätsmängel.' },
+    { f: 'Welches Recht hat der Käufer bei einem Mangel zuerst?', a: ['Sofort zurücktreten', 'Nacherfüllung (Nachbesserung/Ersatzlieferung)', 'Schadensersatz', 'Minderung'], r: 1, e: 'Der Käufer kann zuerst Nacherfüllung verlangen.' },
+    { f: 'Wann beginnt Zahlungsverzug bei Verbrauchern?', a: ['Sofort', '30 Tage nach Rechnungszugang', '14 Tage', '60 Tage'], r: 1, e: 'Bei Verbrauchern tritt Verzug frühestens 30 Tage nach Zugang der Rechnung ein.' },
+    { f: 'Wie hoch ist der Verzugszins bei Unternehmen (B2B)?', a: ['2% über Basiszinssatz', '5% über Basiszinssatz', '9% über Basiszinssatz', '12% über Basiszinssatz'], r: 2, e: 'Unternehmen zahlen 9 Prozentpunkte über dem Basiszinssatz.' },
+    { f: 'Verzugszins bei Verbrauchern?', a: ['2% über Basiszinssatz', '5% über Basiszinssatz', '9% über Basiszinssatz', '12% über Basiszinssatz'], r: 1, e: 'Verbraucher zahlen 5 Prozentpunkte über dem Basiszinssatz.' },
+    { f: 'Wann ist eine Mahnung entbehrlich?', a: ['Unter 100€', 'Bei Fixkauf (fest vereinbarter Termin)', 'Immer bei Privatkunden', 'Nach 14 Tagen'], r: 1, e: 'Beim Fixkauf tritt Verzug automatisch ohne Mahnung ein.' },
+    { f: 'Was ist Annahmeverzug?', a: ['Verkäufer liefert zu spät', 'Käufer nimmt Ware nicht an', 'Ware ist beschädigt', 'Zahlung erfolgt zu spät'], r: 1, e: 'Annahmeverzug: Käufer nimmt ordnungsgemäß gelieferte Ware nicht an.' },
+    { f: 'Rechte des Verkäufers bei Annahmeverzug?', a: ['Ware vernichten', 'Vom Vertrag zurücktreten, einlagern, versteigern', 'Doppelten Preis verlangen', 'Ware zurücknehmen'], r: 1, e: 'Verkäufer kann zurücktreten, einlagern oder versteigern.' },
+    { f: 'Formel für Verzugszinsen?', a: ['K × T × Z / (360 × 100)', 'K × M × Z / 100', 'K × Z / 360', 'K × T / 360'], r: 0, e: 'Verzugszinsen = (Kapital × Tage × Zinssatz) / (360 × 100).' },
+    { f: 'Beweislast für Mängel: Wer muss in den ersten 12 Monaten beweisen?', a: ['Käufer', 'Verkäufer (Beweislastumkehr)', 'Gericht', 'Hersteller'], r: 1, e: 'Beweislastumkehr: Verkäufer muss beweisen, dass Mangel nicht vorlag.' },
+    { f: 'Was ist ein Fixkauf?', a: ['Kauf mit Rabatt', 'Kauf mit festem Liefertermin', 'Kauf ohne Gewährleistung', 'Kauf auf Rechnung'], r: 1, e: 'Beim Fixkauf ist der Liefertermin wesentlicher Vertragsbestandteil.' },
+    { f: 'Was bedeutet Minderung?', a: ['Ware wird entsorgt', 'Käufer zahlt reduzierten Preis wegen Mangels', 'Verkäufer nimmt Ware zurück', 'Käufer bekommt neue Ware'], r: 1, e: 'Minderung = Kaufpreisreduzierung wegen Mangel.' },
+    { f: 'Wie lange beträgt die Verjährungsfrist für Mängelansprüche?', a: ['6 Monate', '2 Jahre', '3 Jahre', '5 Jahre'], r: 1, e: 'Die Verjährungsfrist für Mängelansprüche beträgt 2 Jahre.' },
+    { f: 'Welche Form muss ein Kaufvertrag haben?', a: ['Schriftform', 'Grundsätzlich formfrei (außer z.B. Grundstück)', 'Notarielle Beurkundung', 'Mündlich reicht nie'], r: 1, e: 'Kaufverträge sind grundsätzlich formfrei.' },
+    { f: 'Was ist ein Gattungskauf?', a: ['Kauf einer bestimmten Sache', 'Kauf einer nur der Gattung nach bestimmten Sache', 'Kauf unter Freunden', 'Kauf auf Probe'], r: 1, e: 'Beim Gattungskauf wird eine Sache nur der Gattung nach bestimmt (z.B. 10 Kartons).' },
+    { f: 'Was ist eine Invoice?', a: ['Lieferschein', 'Rechnung (im Außenhandel)', 'Bestellung', 'Zahlungsbeleg'], r: 1, e: 'Invoice = Rechnung, besonders im internationalen Handel.' },
+    { f: 'Wie lauten die drei Stufen der Mängelrechte?', a: ['Kaufen, Tauschen, Zurückgeben', 'Nacherfüllung, Rücktritt/Minderung, Schadensersatz', 'Anzeige, Rücksendung, Erstattung', 'Prüfung, Beanstandung, Klage'], r: 1, e: 'Stufen: 1. Nacherfüllung, 2. Rücktritt/Minderung, 3. Schadensersatz.' },
+    { f: 'Wie wird der durchschnittliche monatliche Bedarf an Material berechnet?', a: ['Jahresbedarf / 12', 'Jahresbedarf / 360 × 30', 'Wochenbedarf × 4,33', 'Tagesbedarf × 30'], r: 0, e: 'Durchschnittlicher Monatsbedarf = Jahresbedarf / 12.' },
+    { f: 'Was versteht man unter dem Meldebestand?', a: ['Mindestbestand, der nie unterschritten werden darf', 'Bestand bei dem neu bestellt wird', 'Maximalbestand im Lager', 'Durchschnittlicher Bestand'], r: 1, e: 'Der Meldebestand ist der Bestand, bei dem neu bestellt wird.' }
+  ],
+  lf08: [
+    { f: 'Welche Aufgabe haben die Nieren?', a: ['Urinproduktion, Regulation Wasser-/Elektrolythaushalt', 'Verdauung', 'Sauerstofftransport', 'Abwehr von Erregern'], r: 0, e: 'Die Nieren filtern das Blut, produzieren Urin und regulieren den Wasserhaushalt.' },
+    { f: 'Wie wird Mittelstrahlurin korrekt gewonnen?', a: ['Ersten Strahl auffangen', 'Ersten Strahl verwerfen, Mittelteil auffangen', 'Gesamten Morgenurin sammeln', '24h-Urin'], r: 1, e: 'Ersten Strahl verwerfen, Mittelteil steril auffangen.' },
+    { f: 'Welchen Parameter misst ein Urin-Teststreifen NICHT?', a: ['Glukose', 'Blut', 'Blutdruck', 'Eiweiß'], r: 2, e: 'Der Teststreifen misst Glukose, Blut, Eiweiß, Nitrit, Leukozyten – nicht den Blutdruck.' },
+    { f: 'Was ist ein Nephron?', a: ['Nierenstein', 'Kleinste Funktionseinheit der Niere', 'Harnleiter', 'Teil der Blase'], r: 1, e: 'Das Nephron ist die kleinste funktionelle Einheit der Niere.' },
+    { f: 'Welches Organ verbindet Niere mit Harnblase?', a: ['Urethra', 'Ureter (Harnleiter)', 'Nierenbecken', 'Harnröhre'], r: 1, e: 'Der Ureter (Harnleiter) verbindet Niere und Harnblase.' },
+    { f: 'Häufigster Erreger von Harnwegsinfekten?', a: ['Streptokokken', 'Escherichia coli (E. coli)', 'Staphylokokken', 'Pseudomonaden'], r: 1, e: 'E. coli ist der häufigste Erreger von Harnwegsinfekten.' },
+    { f: 'Welches Hormon wird in der Niere produziert?', a: ['Insulin', 'Erythropoetin (EPO)', 'Adrenalin', 'Thyroxin'], r: 1, e: 'Die Niere produziert EPO, das die Bildung roter Blutkörperchen anregt.' },
+    { f: 'Was bedeutet Nitrit-positiv im Urin?', a: ['Zucker im Urin', 'Hinweis auf Bakterien', 'Blut im Urin', 'Urin zu konzentriert'], r: 1, e: 'Nitrit-positiv deutet auf Bakterien hin (Harnwegsinfekt).' },
+    { f: 'Welche Struktur filtert das Blut?', a: ['Tubulus', 'Glomerulum (Nierenkörperchen)', 'Nierenbecken', 'Harnleiter'], r: 1, e: 'Im Glomerulum wird das Blut filtriert – erster Schritt der Urinbildung.' },
+    { f: 'Wie heißt die Harnröhre medizinisch?', a: ['Ureter', 'Urethra', 'Ureterostomie', 'Ureteroskopie'], r: 1, e: 'Die Harnröhre = Urethra, der Harnleiter = Ureter.' },
+    { f: 'Welche Farbe hat normaler Urin?', a: ['Farblos bis hellgelb', 'Dunkelbraun', 'Rot', 'Grünlich'], r: 0, e: 'Normaler Urin ist hell- bis strohgelb.' },
+    { f: 'Worauf deutet Eiweiß im Urin hin?', a: ['Dehydration', 'Nierenschädigung oder Infektion', 'Lebererkrankung', 'Zuckerkrankheit'], r: 1, e: 'Eiweiß im Urin (Proteinurie) kann auf Nierenschädigung hindeuten.' },
+    { f: 'Was ist Polyurie?', a: ['Schmerzhaftes Wasserlassen', 'Vermehrte Urinausscheidung (>2L/Tag)', 'Blut im Urin', 'Eitriger Urin'], r: 1, e: 'Polyurie ist eine krankhaft vermehrte Urinausscheidung.' },
+    { f: 'Wie viel Urin produziert eine gesunde Niere täglich?', a: ['0,5–1 Liter', '1,5–2 Liter', '3–4 Liter', '5–6 Liter'], r: 1, e: 'Die tägliche Urinmenge beträgt ca. 1,5–2 Liter.' },
+    { f: 'Was ist Dysurie?', a: ['Blut im Urin', 'Schmerzhaftes/erschwertes Wasserlassen', 'Nächtlicher Harndrang', 'Eitriger Urin'], r: 1, e: 'Dysurie ist schmerzhaftes oder erschwertes Wasserlassen.' },
+    { f: 'Was bedeutet Hämaturie?', a: ['Zucker im Urin', 'Blut im Urin', 'Eiweiß im Urin', 'Bakterien im Urin'], r: 1, e: 'Hämaturie = Blut im Urin (makroskopisch oder mikroskopisch).' },
+    { f: 'Bei welcher Temperatur sollte Urin gelagert werden?', a: ['Zimmertemperatur', 'Im Kühlschrank (2–8°C)', 'Gefrierschrank', 'Im Warmen'], r: 1, e: 'Urin sollte gekühlt bei 2–8°C gelagert werden.' },
+    { f: 'Wie lange ist Urin bei Kühlung maximal haltbar für die Untersuchung?', a: ['1 Stunde', '4 Stunden', '24 Stunden', '48 Stunden'], r: 1, e: 'Urin ist bei Kühlung ca. 4 Stunden haltbar.' },
+    { f: 'Welcher pH-Wert ist normal für Urin?', a: ['pH 1–2', 'pH 5–7', 'pH 8–9', 'pH 10–12'], r: 1, e: 'Der normale Urin-pH liegt zwischen 5 und 7.' },
+    { f: 'Welcher Leukozytenwert im Urin ist normal?', a: ['0–3 pro Gesichtsfeld', '10–20 pro Gesichtsfeld', '50–100 pro Gesichtsfeld', '>200 pro Gesichtsfeld'], r: 0, e: 'Normal sind 0–3 Leukozyten pro Gesichtsfeld im Urinsediment.' }
+  ],
+  zwischenpruefung: [
+    { f: 'Welche drei Säulen der Biologischen Schutzstufe (PSA) gehören dazu?', a: ['Handschuhe, Kittel, Brille', 'Kopf-, Gehör-, Fußschutz', 'Hygieneplan, Desinfektion', 'Arbeitskleidung, Schuhe, Helm'], r: 0, e: 'Persönliche Schutzausrüstung umfasst Handschuhe, Schutzkittel und Schutzbrille.' },
+    { f: 'Was bedeutet Beweislastumkehr?', a: ['Verkäufer muss beweisen, dass kein Mangel vorlag', 'Käufer muss Mangel beweisen', 'Hersteller haftet immer', 'Zusteller verantwortlich'], r: 0, e: 'Der Verkäufer muss das Gegenteil beweisen.' },
+    { f: 'Welches GHS-Symbol warnt vor ätzenden Stoffen?', a: ['Totenkopf', 'Ätzwarnung', 'Flamme', 'Ausrufezeichen'], r: 1, e: 'Das Symbol mit zwei Testrohren warnt vor ätzenden Stoffen.' },
+    { f: 'Was ist ein Fixkauf?', a: ['Kauf mit Rabatt', 'Fester Liefertermin ist wesentlich', 'Kauf ohne Gewährleistung', 'Kauf auf Rechnung'], r: 1, e: 'Die Einhaltung des Liefertermins ist wesentlicher Bestandteil.' },
+    { f: 'Aufgabe der Kassenärztlichen Vereinigung?', a: ['Krankenhäuser verwalten', 'Abrechnung mit Krankenkassen', 'Impfungen durchführen', 'Arzneimittel zulassen'], r: 1, e: 'Die KV wickelt die Abrechnung mit den Krankenkassen ab.' },
+    { f: 'Was ist ein MVZ?', a: ['Medizinisches Versorgungszentrum', 'Medizinischer Verwaltungszentrum', 'Medizinisches Vorsorgezentrum', 'Medizinische Verrechnungszone'], r: 0, e: 'Einrichtungen mit Ärzten verschiedener Fachrichtungen.' },
+    { f: 'Richtige Reihenfolge Instrumentenaufbereitung?', a: ['Sterilisation → Reinigung → Desinfektion', 'Reinigung → Desinfektion → Sterilisation', 'Desinfektion → Reinigung → Sterilisation', 'Reinigung → Sterilisation → Desinfektion'], r: 1, e: 'Reinigung → Desinfektion → Sterilisation.' },
+    { f: 'Autoklav-Sterilisation bei welcher Temperatur?', a: ['80°C', '100°C', '121–134°C', '200°C'], r: 2, e: '121–134°C mit gesättigtem Wasserdampf.' },
+    { f: 'Unterschied Praxisbedarf und Sprechstundenbedarf?', a: ['Praxisbedarf günstiger', 'Praxisbedarf bleibt in Praxis, SSB wird am Patienten angew.', 'Kein Unterschied', 'SSB teurer'], r: 1, e: 'SSB wird direkt am Patienten angewendet und über KV abgerechnet.' },
+    { f: 'Aufbewahrungsfrist Patientenakten?', a: ['5 Jahre', '10 Jahre', '15 Jahre', '20 Jahre'], r: 1, e: 'Patientenakten müssen 10 Jahre aufbewahrt werden.' },
+    { f: 'JAV – was ist das?', a: ['Jahresabschlussverhandlung', 'Jugend- und Auszubildendenvertretung', 'Justizielle Arztverordnung', 'Juristische Aufsicht der Versicherungen'], r: 1, e: 'Die JAV vertritt die Interessen der Auszubildenden.' },
+    { f: 'Was gehört zur Gefährdungsbeurteilung?', a: ['Reinigung der Arbeitsplätze', 'Gefährdungen identifizieren, Risiken bewerten, Maßnahmen', 'Gehaltsabrechnung prüfen', 'Urlaubsplanung'], r: 1, e: 'Gefährdungen identifizieren → Risiken bewerten → Maßnahmen festlegen.' },
+    { f: 'Was versteht man unter Minderung?', a: ['Ware entsorgen', 'Kaufpreis wegen Mangel reduzieren', 'Ware zurücknehmen', 'Neue Ware liefern'], r: 1, e: 'Der Käufer zahlt einen reduzierten Preis.' },
+    { f: 'Welche Aufgabe hat die Berufsgenossenschaft?', a: ['Krankenversicherung', 'Gesetzliche Unfallversicherung', 'Rentenversicherung', 'Arbeitslosenversicherung'], r: 1, e: 'Die Berufsgenossenschaft ist Träger der gesetzlichen Unfallversicherung.' },
+    { f: 'Was versteht man unter einer "Gattung" im Kaufrecht?', a: ['Eine bestimmte Sache', 'Eine Gruppe gleichartiger Sachen', 'Eine Sondergröße', 'Eine Mangelart'], r: 1, e: 'Eine Gattung ist eine Gruppe gleichartiger Sachen (z.B. Äpfel, Kartons).' },
+    { f: 'Welcher Blutbestandteil ist für die Immunabwehr zuständig?', a: ['Erythrozyten', 'Leukozyten (weiße Blutkörperchen)', 'Thrombozyten', 'Blutplasma'], r: 1, e: 'Leukozyten sind für die Immunabwehr zuständig.' },
+    { f: 'Wie übertragen sich HIV und Hepatitis C hauptsächlich?', a: ['Tröpfcheninfektion', 'Schmierinfektion', 'Über Blut und Sexualkontakt', 'Über Lebensmittel'], r: 2, e: 'HIV und HCV werden über Blut und Sexualkontakt übertragen.' },
+    { f: 'Wann darf ein Ausbildungsverhältnis in der Probezeit gekündigt werden?', a: ['Gar nicht', 'Jederzeit ohne Angabe von Gründen', 'Nur mit Zustimmung der IHK', 'Nur bei schwerem Fehlverhalten'], r: 1, e: 'In der Probezeit kann jederzeit ohne Angabe von Gründen gekündigt werden.' },
+    { f: 'Welche Farbe hat ein Brandschutzzeichen?', a: ['Blau', 'Gelb', 'Rot', 'Grün'], r: 2, e: 'Brandschutzzeichen sind rot (z.B. Feuerlöscher).' },
+    { f: 'Was bedeutet "äußerlich anwendbare Arzneimittel" im Praxisbedarf?', a: ['Zum Einnehmen', 'Zum Auftragen auf Haut/Schleimhaut', 'Zum Injizieren', 'Zum Inhalieren'], r: 1, e: 'Äußerlich anwendbar = Auftragen auf Haut/Schleimhaut (topisch).' }
+  ]
+};
+
+const ZUORDNUNGEN = {
+  lf01: [
+    { left: 'BBiG', right: 'Berufsbildungsgesetz' },
+    { left: 'Probezeit', right: '1–3 Monate' },
+    { left: 'ÖGD', right: 'Öffentlicher Gesundheitsdienst' },
+    { left: 'Gebotszeichen', right: 'Blau' },
+    { left: 'Händedesinfektion', right: '30 Sekunden' },
+    { left: 'Berufsgenossenschaft', right: 'Unfallversicherung' },
+    { left: 'Corporate Identity', right: 'Einheitliches Erscheinungsbild' },
+    { left: 'Approbation', right: 'Ärztliche Zulassung' },
+    { left: 'MVZ', right: 'Medizinisches Versorgungszentrum' },
+    { left: 'JArbSchG', right: 'Jugendarbeitsschutzgesetz' }
+  ],
+  lf03: [
+    { left: 'D-Arzt', right: 'Durchgangsarzt' },
+    { left: 'Antibiotika', right: 'Wirken gegen Bakterien' },
+    { left: 'MRSA', right: 'Multi-resistenter Keim' },
+    { left: 'Parenteral', right: 'Direkt in Blutkreislauf' },
+    { left: 'Hepatitis B', right: 'Blutübertragung' },
+    { left: 'Inkubationszeit', right: 'Ansteckung bis Ausbruch' },
+    { left: 'Nosokomial', right: 'Im Krankenhaus erworben' },
+    { left: 'Epstein-Barr-Virus', right: 'Pfeiffersches Drüsenfieber' },
+    { left: 'B-Zellen', right: 'Antikörperproduktion' },
+    { left: 'Autoklav', right: '121–134°C' }
+  ],
+  lf06: [
+    { left: 'Nacherfüllung', right: 'Nachbesserung oder Ersatz' },
+    { left: 'Minderung', right: 'Kaufpreisreduzierung' },
+    { left: 'Fixkauf', right: 'Fester Liefertermin' },
+    { left: 'Annahmeverzug', right: 'Käufer nimmt nicht an' },
+    { left: 'Beweislastumkehr', right: 'Verkäufer muss beweisen' },
+    { left: 'Meldebestand', right: 'Bestand bei Neubestellung' },
+    { left: 'Verzugszins B2B', right: '9% über Basiszinssatz' },
+    { left: 'Verzugszins Verbraucher', right: '5% über Basiszinssatz' },
+    { left: 'Gattungskauf', right: 'Nur der Gattung nach bestimmt' },
+    { left: 'Mahnung entbehrlich', right: 'Beim Fixkauf' }
+  ],
+  lf08: [
+    { left: 'Nephron', right: 'Kleinste Niereneinheit' },
+    { left: 'Ureter', right: 'Harnleiter' },
+    { left: 'Urethra', right: 'Harnröhre' },
+    { left: 'Glomerulum', right: 'Blutfiltration' },
+    { left: 'E. coli', right: 'Häufigster HWI-Erreger' },
+    { left: 'Mittelstrahlurin', right: 'Ersten Strahl verwerfen' },
+    { left: 'Nitrit-positiv', right: 'Bakterien im Urin' },
+    { left: 'Erythropoetin', right: 'Nierenhormon' },
+    { left: 'Hämaturie', right: 'Blut im Urin' },
+    { left: 'Dysurie', right: 'Schmerzhaftes Wasserlassen' }
+  ]
+};
+
+// ====================================================================
+// STATE
+// ====================================================================
+let state = {
+  screen: 'dashboard',
+  lernfeld: null,
+  modus: 'quiz',
+  frageIdx: 0,
+  beantwortet: false,
+  punkte: 0,
+  gesamt: 0,
+  startZeit: null,
+  timerInterval: null,
+  verbleibend: 0,
+  isTimed: false,
+  kkIdx: 0,
+  kkBereitsAufgedeckt: false,
+  matchSelected: null,
+  matchPairs: [],
+  matchGelöst: 0,
+  matchLeft: [],
+  matchRight: [],
+  gemischteFragen: [],
+  ergebnisse: JSON.parse(localStorage.getItem('mfa_ergebnisse') || '{}'),
+  statistik: JSON.parse(localStorage.getItem('mfa_statistik') || '{"gespielt":0,"richtig":0,"falsch":0,"serie":0,"maxSerie":0}'),
+  tagesfrage: null
+};
+
+function saveErgebnisse() {
+  localStorage.setItem('mfa_ergebnisse', JSON.stringify(state.ergebnisse));
+  localStorage.setItem('mfa_statistik', JSON.stringify(state.statistik));
+}
+
+// ====================================================================
+// RENDER
+// ====================================================================
+const app = document.getElementById('app');
+
+function render() {
+  switch (state.screen) {
+    case 'dashboard': renderDashboard(); break;
+    case 'lernfeld': renderLernfeld(); break;
+    case 'quiz': renderQuiz(); break;
+    case 'karteikarten': renderKarteikarten(); break;
+    case 'pruefung': renderPruefung(); break;
+    case 'zeitrennen': renderZeitrennen(); break;
+    case 'zuordnung': renderZuordnung(); break;
+    case 'ergebnis': renderErgebnis(); break;
+    case 'tagesfrage': renderTagesfrage(); break;
+    case 'dateien': renderDateien(); break;
+    case 'statistik': renderStatistik(); break;
+    default: renderDashboard();
+  }
+}
+
+// ====================================================================
+// DASHBOARD
+// ====================================================================
+function renderDashboard() {
+  const s = state.statistik;
+  const gesamtFragen = Object.values(FRAGEN).reduce((n, q) => n + q.length, 0);
+  const gelernt = Object.values(state.ergebnisse).reduce((n, v) => n + (v.richtig || 0), 0);
+  const quote = (s.richtig + s.falsch) > 0 ? Math.round(s.richtig / (s.richtig + s.falsch) * 100) : 0;
+
+  app.innerHTML = `
+    <div class="header">
+      <div>
+        <h1>📚 Wiederholungstool MFA24G</h1>
+        <div class="sub">Alle Inhalte von LF01–LF08 & Zwischenprüfung</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='statistik'; render();">📊 Statistik</button>
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dateien'; render();">📁 Materialien</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetProgress()">🔄 Zurücksetzen</button>
+      </div>
+    </div>
+
+    <div class="hero">
+      <h2>🧠 Bereit zum Wiederholen?</h2>
+      <p>${gesamtFragen} Fragen · ${Object.keys(ZUORDNUNGEN).reduce((n,k)=>n+ZUORDNUNGEN[k].length,0)} Zuordnungen · ${Object.keys(LERNFELDER).length} Lernfelder</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="startTagesfrage()">🎯 Frage des Tages</button>
+        <button class="btn btn-success" onclick="startPruefung()">📝 Prüfung simulieren</button>
+        <button class="btn btn-secondary" onclick="state.modus='zeitrennen'; state.screen='zeitrennen'; render();">⏱️ Zeitrennen</button>
+      </div>
+      ${s.gespielt > 0 ? `
+      <div style="margin-top:16px;font-size:13px;color:#94a3b8;">
+        📊 ${s.gespielt} Durchläufe · ${s.richtig} richtige · ${s.falsch} falsche · Quote: ${quote}%
+        ${s.maxSerie > 2 ? `· 🔥 Beste Serie: ${s.maxSerie} richtige` : ''}
+      </div>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="card-header">📖 Lernfelder</div>
+      <div class="lernfeld-grid">
+        ${LERNFELDER.map(lf => {
+          const erg = state.ergebnisse[lf.id];
+          const richtig = erg ? erg.richtig : 0;
+          const total = FRAGEN[lf.id] ? FRAGEN[lf.id].length : 0;
+          const pct = total > 0 ? Math.round(richtig / total * 100) : 0;
+          const dot = pct >= 80 ? 'green' : pct >= 40 ? 'yellow' : 'gray';
+          return `<div class="lernfeld-card" onclick="openLernfeld('${lf.id}')">
+            <div class="icon">${lf.icon}</div>
+            <div class="name">${lf.name}</div>
+            <div class="desc">${lf.desc}</div>
+            <div class="stats">
+              <span>📝 ${total} Fragen</span>
+              <span>✅ ${richtig} richtig</span>
+              <span><span class="progress-dot ${dot}"></span> ${pct}%</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">🎮 Lernmodi</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">
+        <button class="btn btn-secondary" onclick="openLernfeld('lf01')">🏥 LF01 starten</button>
+        <button class="btn btn-secondary" onclick="openLernfeld('lf03')">🦠 LF03 starten</button>
+        <button class="btn btn-secondary" onclick="openLernfeld('lf06')">📦 LF06 starten</button>
+        <button class="btn btn-secondary" onclick="openLernfeld('lf08')">🫀 LF08 starten</button>
+        <button class="btn btn-secondary" onclick="openLernfeld('zwischenpruefung')">🎯 Zwischenprüfung</button>
+      </div>
+    </div>
+  `;
+}
+
+// ====================================================================
+// LERNFELD-ANSICHT
+// ====================================================================
+function openLernfeld(id) {
+  state.lernfeld = id;
+  state.screen = 'lernfeld';
+  render();
+}
+
+function renderLernfeld() {
+  const lf = LERNFELDER.find(l => l.id === state.lernfeld);
+  if (!lf) { state.screen = 'dashboard'; render(); return; }
+  const fragen = FRAGEN[lf.id] || [];
+  const erg = state.ergebnisse[lf.id] || {richtig: 0, gespielt: 0};
+  const pct = fragen.length > 0 ? Math.round(erg.richtig / fragen.length * 100) : 0;
+
+  app.innerHTML = `
+    <div class="header">
+      <div>
+        <h1>${lf.icon} ${lf.name}</h1>
+        <div class="sub">${lf.desc}</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dashboard'; render();">← Zurück</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📊 Lernfortschritt</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:100px;"><div style="font-size:28px;font-weight:700">${pct}%</div><div style="font-size:12px;color:#94a3b8;">von ${fragen.length} Fragen</div></div>
+        <div style="flex:1;min-width:100px;"><div style="font-size:28px;font-weight:700">${erg.richtig || 0}</div><div style="font-size:12px;color:#94a3b8;">richtig beantwortet</div></div>
+        <div style="flex:1;min-width:100px;"><div style="font-size:28px;font-weight:700">${erg.gespielt || 0}</div><div style="font-size:12px;color:#94a3b8;">Durchläufe</div></div>
+      </div>
+      <div class="progress-bar-wrap" style="margin-top:8px;"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📚 Kapitel</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">
+        ${lf.chapters.map((ch,i) => `
+          <div style="background:#334155;padding:14px;border-radius:10px;text-align:center;">
+            <div style="font-size:20px;">${ch.emoji}</div>
+            <div style="font-size:12px;margin-top:4px;">${ch.title}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">🎮 Lernmodi wählen</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+        <button class="btn btn-primary" onclick="startQuiz('${lf.id}')">📝 Quiz</button>
+        <button class="btn btn-secondary" onclick="startKarteikarten('${lf.id}')">🃏 Karteikarten</button>
+        <button class="btn btn-secondary" onclick="startZuordnung('${lf.id}')">🔗 Zuordnung</button>
+        <button class="btn btn-secondary" onclick="startZeitrennenLf('${lf.id}')">⏱️ Zeitrennen</button>
+      </div>
+    </div>
+
+    ${lf.files.length > 0 ? `
+    <div class="card">
+      <div class="card-header">📁 Materialien in diesem Ordner</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${lf.files.map(f => `<span class="tag" style="background:#334155;padding:4px 12px;border-radius:20px;font-size:12px;">📄 ${f}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-header">🎯 Frage des Tages</div>
+      ${renderTagesfragePreview(lf.id)}
+    </div>
+  `;
+}
+
+// ====================================================================
+// QUIZ
+// ====================================================================
+function startQuiz(id) {
+  state.lernfeld = id;
+  state.frageIdx = 0;
+  state.punkte = 0;
+  state.beantwortet = false;
+  state.gesamt = FRAGEN[id].length;
+  state.modus = 'quiz';
+  state.screen = 'quiz';
+  render();
+}
+
+function renderQuiz() {
+  const fragen = FRAGEN[state.lernfeld];
+  if (state.frageIdx >= fragen.length) { showErgebnis(); return; }
+  const q = fragen[state.frageIdx];
+  const lf = LERNFELDER.find(l => l.id === state.lernfeld);
+  const num = state.frageIdx + 1;
+
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>📝 Quiz · ${lf.icon} ${lf.name}</h1></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openLernfeld('${state.lernfeld}')">← Beenden</button>
+      </div>
+    </div>
+    <div class="quiz-area">
+      <div class="question-meta">
+        <span class="tag">Frage ${num}/${state.gesamt}</span>
+        <span class="tag">✅ ${state.punkte} richtig</span>
+        <span class="tag">📊 ${state.gesamt > 0 ? Math.round(state.punkte/state.gesamt*100) : 0}%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${state.frageIdx / state.gesamt * 100}%"></div></div>
+      <div class="question-text">${q.f}</div>
+      <div class="options" id="options">
+        ${q.a.map((a, i) => `<div class="option" data-idx="${i}" onclick="waehleQuiz(${i})">${a}</div>`).join('')}
+      </div>
+      <div class="feedback-box" id="feedback"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" id="nextBtn" onclick="nextQuiz()" disabled>Nächste Frage →</button>
+      </div>
+    </div>
+  `;
+}
+
+function waehleQuiz(idx) {
+  if (state.beantwortet) return;
+  state.beantwortet = true;
+  const q = FRAGEN[state.lernfeld][state.frageIdx];
+  const opts = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  state.statistik.gespielt++;
+  if (idx === q.r) {
+    opts[idx].classList.add('correct');
+    state.punkte++;
+    state.statistik.richtig++;
+    state.statistik.serie++;
+    if (state.statistik.serie > state.statistik.maxSerie) state.statistik.maxSerie = state.statistik.serie;
+    fb.className = 'feedback-box correct show';
+    fb.innerHTML = `✅ Richtig! ${q.e}`;
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.r].classList.add('reveal-correct');
+    state.statistik.falsch++;
+    state.statistik.serie = 0;
+    fb.className = 'feedback-box wrong show';
+    fb.innerHTML = `❌ Leider falsch.<br><strong>Richtig:</strong> ${q.a[q.r]}<br>💡 ${q.e}`;
+  }
+  saveErgebnisse();
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuiz() {
+  state.frageIdx++;
+  state.beantwortet = false;
+  render();
+}
+
+// ====================================================================
+// KARTEIKARTEN
+// ====================================================================
+function startKarteikarten(id) {
+  state.lernfeld = id;
+  state.kkIdx = 0;
+  state.kkBereitsAufgedeckt = false;
+  state.modus = 'karteikarten';
+  state.screen = 'karteikarten';
+  render();
+}
+
+function renderKarteikarten() {
+  const fragen = FRAGEN[state.lernfeld];
+  const lf = LERNFELDER.find(l => l.id === state.lernfeld);
+  if (state.kkIdx >= fragen.length) {
+    state.kkIdx = 0;
+    state.kkBereitsAufgedeckt = false;
+  }
+  const q = fragen[state.kkIdx];
+  const flipped = state.kkBereitsAufgedeckt ? 'flipped' : '';
+
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>🃏 Karteikarten · ${lf.icon} ${lf.name}</h1></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openLernfeld('${state.lernfeld}')">← Beenden</button>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:13px;color:#94a3b8;margin-bottom:8px;">
+      Karte ${state.kkIdx + 1} von ${fragen.length}
+    </div>
+    <div class="flashcard ${flipped}" onclick="deckKarteAuf()">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <div class="label">FRAGE</div>
+          <div class="text">${q.f}</div>
+        </div>
+        <div class="flashcard-back">
+          <div class="text">${q.a[q.r]}</div>
+          <div class="explanation">${q.e}</div>
+        </div>
+      </div>
+    </div>
+    <div class="flashcard-hint">👆 Tippen zum Umdrehen</div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn btn-secondary" onclick="kkVorherige()" ${state.kkIdx === 0 ? 'disabled' : ''}>← Vorherige</button>
+      <button class="btn btn-primary" onclick="kkNaechste()">Nächste →</button>
+    </div>
+  `;
+}
+
+function deckKarteAuf() {
+  state.kkBereitsAufgedeckt = true;
+  render();
+}
+
+function kkNaechste() {
+  const fragen = FRAGEN[state.lernfeld];
+  state.kkIdx = Math.min(state.kkIdx + 1, fragen.length);
+  state.kkBereitsAufgedeckt = false;
+  render();
+}
+
+function kkVorherige() {
+  if (state.kkIdx > 0) {
+    state.kkIdx--;
+    state.kkBereitsAufgedeckt = false;
+    render();
+  }
+}
+
+// ====================================================================
+// PRÜFUNGSSIMULATION
+// ====================================================================
+function startPruefung() {
+  state.gemischteFragen = [];
+  const ids = state.lernfeld ? [state.lernfeld] : Object.keys(FRAGEN);
+  ids.forEach(key => {
+    (FRAGEN[key] || []).forEach(q => state.gemischteFragen.push({ ...q, lernfeld: key }));
+  });
+  for (let i = state.gemischteFragen.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.gemischteFragen[i], state.gemischteFragen[j]] = [state.gemischteFragen[j], state.gemischteFragen[i]];
+  }
+  if (state.gemischteFragen.length > 20) state.gemischteFragen = state.gemischteFragen.slice(0, 20);
+  state.frageIdx = 0;
+  state.punkte = 0;
+  state.beantwortet = false;
+  state.gesamt = state.gemischteFragen.length;
+  state.modus = 'pruefung';
+  state.screen = 'pruefung';
+  render();
+}
+
+function renderPruefung() {
+  if (state.frageIdx >= state.gemischteFragen.length) { showErgebnis(); return; }
+  const q = state.gemischteFragen[state.frageIdx];
+  const lf = LERNFELDER.find(l => l.id === q.lernfeld);
+
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>📝 Prüfungssimulation</h1><div class="sub">${state.gesamt} Fragen gemischt</div></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dashboard'; render();">← Beenden</button>
+      </div>
+    </div>
+    <div class="quiz-area">
+      <div class="question-meta">
+        <span class="tag">Frage ${state.frageIdx+1}/${state.gesamt}</span>
+        <span class="tag">${lf.icon} ${lf.name}</span>
+        <span class="tag">✅ ${state.punkte} richtig</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${state.frageIdx/state.gesamt*100}%"></div></div>
+      <div class="question-text">${q.f}</div>
+      <div class="options" id="options">
+        ${q.a.map((a,i) => `<div class="option" data-idx="${i}" onclick="waehlePruefung(${i})">${a}</div>`).join('')}
+      </div>
+      <div class="feedback-box" id="feedback"></div>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextPruefung()" disabled>Nächste →</button>
+    </div>
+  `;
+}
+
+function waehlePruefung(idx) {
+  if (state.beantwortet) return;
+  state.beantwortet = true;
+  const q = state.gemischteFragen[state.frageIdx];
+  const opts = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  state.statistik.gespielt++;
+  if (idx === q.r) {
+    opts[idx].classList.add('correct');
+    state.punkte++;
+    state.statistik.richtig++;
+    state.statistik.serie++;
+    if (state.statistik.serie > state.statistik.maxSerie) state.statistik.maxSerie = state.statistik.serie;
+    fb.className = 'feedback-box correct show';
+    fb.innerHTML = `✅ Richtig! ${q.e}`;
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.r].classList.add('reveal-correct');
+    state.statistik.falsch++;
+    state.statistik.serie = 0;
+    fb.className = 'feedback-box wrong show';
+    fb.innerHTML = `❌ Falsch. <strong>Richtig:</strong> ${q.a[q.r]}<br>💡 ${q.e}`;
+  }
+  saveErgebnisse();
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextPruefung() {
+  state.frageIdx++;
+  state.beantwortet = false;
+  render();
+}
+
+// ====================================================================
+// ZEITRENNEN
+// ====================================================================
+function startZeitrennen() {
+  state.isTimed = true;
+  state.gemischteFragen = [];
+  Object.keys(FRAGEN).forEach(key => {
+    (FRAGEN[key] || []).forEach(q => state.gemischteFragen.push({ ...q, lernfeld: key }));
+  });
+  for (let i = state.gemischteFragen.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.gemischteFragen[i], state.gemischteFragen[j]] = [state.gemischteFragen[j], state.gemischteFragen[i]];
+  }
+  state.frageIdx = 0;
+  state.punkte = 0;
+  state.beantwortet = false;
+  state.gesamt = state.gemischteFragen.length;
+  state.verbleibend = 120;
+  state.modus = 'zeitrennen';
+  state.screen = 'zeitrennen';
+  state.startZeit = Date.now();
+  render();
+  startTimer();
+}
+
+function startZeitrennenLf(id) {
+  state.lernfeld = id;
+  state.isTimed = true;
+  state.gemischteFragen = (FRAGEN[id] || []).map(q => ({ ...q, lernfeld: id }));
+  for (let i = state.gemischteFragen.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.gemischteFragen[i], state.gemischteFragen[j]] = [state.gemischteFragen[j], state.gemischteFragen[i]];
+  }
+  state.frageIdx = 0;
+  state.punkte = 0;
+  state.beantwortet = false;
+  state.gesamt = state.gemischteFragen.length;
+  state.verbleibend = 60;
+  state.modus = 'zeitrennen';
+  state.screen = 'zeitrennen';
+  state.startZeit = Date.now();
+  render();
+  startTimer();
+}
+
+function startTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.verbleibend--;
+    const el = document.getElementById('timerDisplay');
+    if (el) {
+      const m = Math.floor(state.verbleibend / 60);
+      const s = state.verbleibend % 60;
+      el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+      el.className = 'timer-display' + (state.verbleibend <= 15 ? ' urgent' : '');
+    }
+    if (state.verbleibend <= 0) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+      showErgebnis();
+    }
+  }, 1000);
+}
+
+function renderZeitrennen() {
+  if (state.frageIdx >= state.gemischteFragen.length) { showErgebnis(); return; }
+  const q = state.gemischteFragen[state.frageIdx];
+  const lf = LERNFELDER.find(l => l.id === q.lernfeld);
+
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>⏱️ Zeitrennen</h1><div class="sub">So viele Fragen wie möglich in ${state.lernfeld ? '1' : '2'} Minuten</div></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="clearInterval(state.timerInterval); state.timerInterval=null; state.screen='dashboard'; render();">×</button>
+      </div>
+    </div>
+    <div class="timer-display" id="timerDisplay">2:00</div>
+    <div style="text-align:center;font-size:13px;color:#94a3b8;margin-bottom:8px;">
+      Frage ${state.frageIdx+1} · ✅ ${state.punkte} richtig · ${lf ? lf.icon+' '+lf.name : ''}
+    </div>
+    <div class="quiz-area">
+      <div class="question-text">${q.f}</div>
+      <div class="options" id="options">
+        ${q.a.map((a,i) => `<div class="option" data-idx="${i}" onclick="waehleZeitrennen(${i})">${a}</div>`).join('')}
+      </div>
+      <div class="feedback-box" id="feedback"></div>
+    </div>
+  `;
+}
+
+function waehleZeitrennen(idx) {
+  if (state.beantwortet) return;
+  state.beantwortet = true;
+  const q = state.gemischteFragen[state.frageIdx];
+  const opts = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  state.statistik.gespielt++;
+  if (idx === q.r) {
+    opts[idx].classList.add('correct');
+    state.punkte++;
+    state.statistik.richtig++;
+    state.statistik.serie++;
+    if (state.statistik.serie > state.statistik.maxSerie) state.statistik.maxSerie = state.statistik.serie;
+    fb.className = 'feedback-box correct show';
+    fb.innerHTML = `✅ ${q.e}`;
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.r].classList.add('reveal-correct');
+    state.statistik.falsch++;
+    state.statistik.serie = 0;
+    fb.className = 'feedback-box wrong show';
+    fb.innerHTML = `❌ <strong>${q.a[q.r]}</strong> — ${q.e}`;
+  }
+  saveErgebnisse();
+  setTimeout(() => {
+    state.frageIdx++;
+    state.beantwortet = false;
+    render();
+  }, 800);
+}
+
+// ====================================================================
+// ZUORDNUNGSSPIEL
+// ====================================================================
+function startZuordnung(id) {
+  const pairs = ZUORDNUNGEN[id];
+  if (!pairs) return;
+  state.lernfeld = id;
+  state.matchPairs = [...pairs];
+  state.matchGelöst = 0;
+  state.matchSelected = null;
+  state.matchedIndices = [];
+  const shufLeft = [...pairs];
+  for (let i = shufLeft.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shufLeft[i], shufLeft[j]] = [shufLeft[j], shufLeft[i]];
+  }
+  state.matchLeft = shufLeft.map(p => p.left);
+  const shufRight = [...pairs];
+  for (let i = shufRight.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shufRight[i], shufRight[j]] = [shufRight[j], shufRight[i]];
+  }
+  state.matchRight = shufRight.map(p => p.right);
+  state.modus = 'zuordnung';
+  state.screen = 'zuordnung';
+  render();
+}
+
+function renderZuordnung() {
+  const lf = LERNFELDER.find(l => l.id === state.lernfeld);
+  const gelöst = state.matchGelöst;
+  const total = state.matchPairs.length;
+
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>🔗 Zuordnungsspiel · ${lf.icon} ${lf.name}</h1></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openLernfeld('${state.lernfeld}')">← Beenden</button>
+      </div>
+    </div>
+    ${gelöst === total ? `
+      <div class="card" style="text-align:center;padding:30px;">
+        <div style="font-size:48px;">🎉</div>
+        <div style="font-size:20px;font-weight:700;margin:8px 0;">Alle ${total} Paare gefunden!</div>
+        <button class="btn btn-primary" onclick="startZuordnung('${state.lernfeld}')">🔄 Noch einmal</button>
+      </div>
+    ` : `
+    <div style="font-size:13px;color:#94a3b8;text-align:center;margin-bottom:8px;">
+      🔗 ${gelöst}/${total} Paare gefunden · Klicke je einen Begriff links und rechts
+    </div>
+    <div class="match-grid">
+      <div>
+        ${state.matchLeft.map((item, i) => {
+          const pi = state.matchPairs.findIndex(p => p.left === item);
+          const isMatched = state.matchedIndices.includes(pi);
+          const isSelected = state.matchSelected === ('l'+i);
+          return `<div class="match-item ${isMatched?'matched':''} ${isSelected?'selected':''}" onclick="matchClick('l',${i})">${item}</div>`;
+        }).join('')}
+      </div>
+      <div>
+        ${state.matchRight.map((item, i) => {
+          const pi = state.matchPairs.findIndex(p => p.right === item);
+          const isMatched = state.matchedIndices.includes(pi);
+          const isSelected = state.matchSelected === ('r'+i);
+          return `<div class="match-item ${isMatched?'matched':''} ${isSelected?'selected':''}" onclick="matchClick('r',${i})">${item}</div>`;
+        }).join('')}
+      </div>
+    </div>
+    `}
+  `;
+}
+
+function matchClick(side, idx) {
+  const pi = side === 'l'
+    ? state.matchPairs.findIndex(p => p.left === state.matchLeft[idx])
+    : state.matchPairs.findIndex(p => p.right === state.matchRight[idx]);
+  if (state.matchedIndices.includes(pi)) return;
+  const key = side + idx;
+  if (state.matchSelected === null) {
+    state.matchSelected = key;
+    render();
+    return;
+  }
+  if (state.matchSelected === key) {
+    state.matchSelected = null;
+    render();
+    return;
+  }
+  const prevSide = state.matchSelected[0];
+  const prevIdx = parseInt(state.matchSelected.slice(1));
+  let leftIdx, rightIdx;
+  if (prevSide === 'l') { leftIdx = prevIdx; rightIdx = idx; }
+  else { leftIdx = idx; rightIdx = prevIdx; }
+  const pairIdx = state.matchPairs.findIndex(p => p.left === state.matchLeft[leftIdx] && p.right === state.matchRight[rightIdx]);
+  if (pairIdx >= 0 && !state.matchedIndices.includes(pairIdx)) {
+    state.matchedIndices.push(pairIdx);
+    state.matchGelöst++;
+  }
+  state.matchSelected = null;
+  render();
+}
+
+// ====================================================================
+// TAGESFRAGE
+// ====================================================================
+function startTagesfrage() {
+  const all = [];
+  Object.keys(FRAGEN).forEach(key => {
+    (FRAGEN[key] || []).forEach(q => all.push({ ...q, lernfeld: key }));
+  });
+  const today = new Date().toDateString();
+  const seed = today.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+  const idx = seed % all.length;
+  state.tagesfrage = all[idx];
+  state.screen = 'tagesfrage';
+  state.beantwortet = false;
+  render();
+}
+
+function renderTagesfrage() {
+  const q = state.tagesfrage;
+  if (!q) { state.screen = 'dashboard'; render(); return; }
+  const lf = LERNFELDER.find(l => l.id === q.lernfeld);
+
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>🎯 Frage des Tages</h1></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dashboard'; render();">← Zurück</button>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:14px;color:#94a3b8;">${lf.icon} ${lf.name}</div>
+      <div class="question-text" style="margin-top:12px;">${q.f}</div>
+      <div class="options" id="options" style="max-width:500px;margin:0 auto;">
+        ${q.a.map((a,i) => `<div class="option" data-idx="${i}" onclick="waehleTagesfrage(${i})">${a}</div>`).join('')}
+      </div>
+      <div class="feedback-box" id="feedback" style="max-width:500px;margin:10px auto;"></div>
+    </div>
+  `;
+}
+
+function renderTagesfragePreview(lfId) {
+  const all = [];
+  Object.keys(FRAGEN).forEach(key => {
+    (FRAGEN[key] || []).forEach(q => all.push({ ...q, lernfeld: key }));
+  });
+  const today = new Date().toDateString();
+  const seed = today.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+  const idx = seed % all.length;
+  const q = all[idx];
+  const lf = LERNFELDER.find(l => l.id === q.lernfeld);
+  if (q.lernfeld !== lfId) return `<div style="font-size:13px;color:#94a3b8;">Heute: Frage aus ${lf.icon} ${lf.name} · <button class="btn btn-sm btn-primary" onclick="startTagesfrage(); state.screen='tagesfrage'; render();">Anzeigen</button></div>`;
+  return `<div style="font-size:13px;">${q.f}<br><button class="btn btn-sm btn-primary" style="margin-top:8px;" onclick="startTagesfrage(); state.screen='tagesfrage'; render();">Beantworten</button></div>`;
+}
+
+function waehleTagesfrage(idx) {
+  if (state.beantwortet) return;
+  state.beantwortet = true;
+  const q = state.tagesfrage;
+  const opts = document.querySelectorAll('#options .option');
+  const fb = document.getElementById('feedback');
+  state.statistik.gespielt++;
+  if (idx === q.r) {
+    opts[idx].classList.add('correct');
+    state.statistik.richtig++;
+    state.statistik.serie++;
+    if (state.statistik.serie > state.statistik.maxSerie) state.statistik.maxSerie = state.statistik.serie;
+    fb.className = 'feedback-box correct show';
+    fb.innerHTML = `✅ Richtig! ${q.e}`;
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.r].classList.add('reveal-correct');
+    state.statistik.falsch++;
+    state.statistik.serie = 0;
+    fb.className = 'feedback-box wrong show';
+    fb.innerHTML = `❌ <strong>Richtig:</strong> ${q.a[q.r]}<br>💡 ${q.e}`;
+  }
+  saveErgebnisse();
+}
+
+// ====================================================================
+// ERGEBNIS
+// ====================================================================
+function showErgebnis() {
+  const richtig = state.punkte;
+  const gesamt = state.gesamt;
+  const pct = gesamt > 0 ? Math.round(richtig / gesamt * 100) : 0;
+  let note = 'Nachbesserung';
+  let farbe = '#ef4444';
+  let stars = '⭐';
+  if (pct >= 92) { note = 'Sehr gut'; farbe = '#10b981'; stars = '⭐⭐⭐⭐⭐'; }
+  else if (pct >= 81) { note = 'Gut'; farbe = '#22c55e'; stars = '⭐⭐⭐⭐'; }
+  else if (pct >= 67) { note = 'Befriedigend'; farbe = '#f59e0b'; stars = '⭐⭐⭐'; }
+  else if (pct >= 50) { note = 'Ausreichend'; farbe = '#f97316'; stars = '⭐⭐'; }
+  else stars = '⭐';
+
+  // Save lernfeld ergebnisse
+  const lfId = state.lernfeld || 'all';
+  if (!state.ergebnisse[lfId]) state.ergebnisse[lfId] = { richtig: 0, gesamt: 0, gespielt: 0 };
+  if (state.modus !== 'zeitrennen') {
+    state.ergebnisse[lfId].richtig = Math.max(state.ergebnisse[lfId].richtig || 0, richtig);
+    state.ergebnisse[lfId].gesamt = Math.max(state.ergebnisse[lfId].gesamt || 0, gesamt);
+  }
+  state.ergebnisse[lfId].gespielt = (state.ergebnisse[lfId].gespielt || 0) + 1;
+  saveErgebnisse();
+
+  const lf = state.lernfeld ? LERNFELDER.find(l => l.id === state.lernfeld) : null;
+  const zeit = state.startZeit ? Math.round((Date.now() - state.startZeit) / 1000) : 0;
+
+  state.screen = 'ergebnis';
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>📊 Ergebnis</h1></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dashboard'; render();">← Dashboard</button>
+      </div>
+    </div>
+    <div class="card result-screen">
+      <div class="stars">${stars}</div>
+      <div class="big-num">${richtig}/${gesamt}</div>
+      <div style="font-size:24px;font-weight:700;color:${farbe};">${pct}% · ${note}</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="num">${richtig}</div><div class="lbl">Richtig</div></div>
+        <div class="detail-item"><div class="num">${gesamt - richtig}</div><div class="lbl">Falsch</div></div>
+        <div class="detail-item"><div class="num">${pct}%</div><div class="lbl">Quote</div></div>
+        ${zeit > 0 ? `<div class="detail-item"><div class="num">${zeit}s</div><div class="lbl">Zeit</div></div>` : ''}
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        ${lf ? `<button class="btn btn-primary" onclick="startQuiz('${lf.id}')">📝 Quiz wiederholen</button>` : ''}
+        ${lf ? `<button class="btn btn-secondary" onclick="startKarteikarten('${lf.id}')">🃏 Karteikarten</button>` : ''}
+        <button class="btn btn-secondary" onclick="state.screen='dashboard'; render();">🏠 Dashboard</button>
+      </div>
+    </div>
+  `;
+}
+
+// ====================================================================
+// DATEIBROWSER
+// ====================================================================
+function renderDateien() {
+  app.innerHTML = `
+    <div class="header">
+      <div><h1>📁 Materialien im Ordner</h1><div class="sub">Alle Dateien aus 001 MFA24 G</div></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dashboard'; render();">← Zurück</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="folder-tree">
+        <div class="folder open">
+          <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 001 MFA24 G</div>
+          <div class="folder-children">
+            <div class="folder">
+              <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernfeld 01</div>
+              <div class="folder-children">
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 01</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Beendigung der Berufsausbildung</div>
+                    <div class="file">📄 Hepatitis B</div>
+                    <div class="file">📄 Klassenarbeit Nr.1</div>
+                  </div>
+                </div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 02</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Arbeitsschutz</div>
+                    <div class="file">📄 Infektionskrankheiten</div>
+                    <div class="file">📄 Händedesinfektion</div>
+                    <div class="file">📄 Hygieneplan</div>
+                    <div class="file">📄 Kanülenstichverletzung</div>
+                  </div>
+                </div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 03</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Öffentlicher Gesundheitsdienst</div>
+                    <div class="file">📄 Corporate Identity</div>
+                    <div class="file">📄 Aufgaben Gesundheitswesen</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder">
+              <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernfeld 03</div>
+              <div class="folder-children">
+                <div class="file">📄 Antibiotika MRSA</div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 01</div>
+                  <div class="folder-children">
+                    <div class="file">📄 D-Arzt</div>
+                    <div class="file">📄 Hepatitis</div>
+                    <div class="file">📄 Infektionswege</div>
+                  </div>
+                </div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 02</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Mikrobiologie</div>
+                    <div class="file">📄 Virensteckbrief</div>
+                    <div class="file">📄 Impfungen</div>
+                    <div class="file">📄 Virusinfektionen</div>
+                  </div>
+                </div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 03</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Antibiotika</div>
+                    <div class="file">📄 MRSA</div>
+                  </div>
+                </div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Schülerergebnisse</div>
+                  <div class="folder-children">
+                    <div class="file">🖼️ Ergebnisse</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder">
+              <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernfeld 06</div>
+              <div class="folder-children">
+                <div class="file">📄 Klassenarbeit</div>
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 03</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Mängelarten</div>
+                    <div class="file">📄 Nicht-Rechtzeitig-Lieferung</div>
+                    <div class="file">📄 Verzugszinsen</div>
+                    <div class="file">📄 Annahmeverzug</div>
+                    <div class="file">📄 Abschlusstest</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder">
+              <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernfeld 08</div>
+              <div class="folder-children">
+                <div class="folder">
+                  <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Lernsituation 01</div>
+                  <div class="folder-children">
+                    <div class="file">📄 Anatomie Harnorgane</div>
+                    <div class="file">📄 Urinbildung</div>
+                    <div class="file">📄 Mittelstrahlurin</div>
+                    <div class="file">📄 Teststreifen</div>
+                    <div class="file">📄 Harnwegsinfekte</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder">
+              <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Zwischenprüfung</div>
+              <div class="folder-children">
+                <div class="file">📄 Instrumentenkreislauf</div>
+                <div class="file">📄 Wiederholung LF01</div>
+              </div>
+            </div>
+            <div class="folder">
+              <div class="folder-label" onclick="this.parentElement.classList.toggle('open')">📁 Einschulung etc</div>
+              <div class="folder-children">
+                <div class="file">📄 MFA Kennenlernen</div>
+                <div class="file">📄 Notenlisten</div>
+                <div class="file">📄 Ergebnisse Genially</div>
+              </div>
+            </div>
+            <div class="file">📄 Gedächtnisprotokoll</div>
+            <div class="file">📄 KI Statements Schüler</div>
+            <div class="file">📄 Lernquiz MFA24G</div>
+            <div class="file">📄 Lernreflexionen (Gibbs)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ====================================================================
+// STATISTIK
+// ====================================================================
+function renderStatistik() {
+  const s = state.statistik;
+  const quote = (s.richtig + s.falsch) > 0 ? Math.round(s.richtig / (s.richtig + s.falsch) * 100) : 0;
+
+  let html = `
+    <div class="header">
+      <div><h1>📊 Lernstatistik</h1><div class="sub">Dein Fortschritt auf einen Blick</div></div>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="state.screen='dashboard'; render();">← Zurück</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+        <div class="detail-item"><div class="num" style="text-align:center;">${s.gespielt}</div><div class="lbl" style="text-align:center;">Durchläufe</div></div>
+        <div class="detail-item"><div class="num" style="text-align:center;color:#10b981;">${s.richtig}</div><div class="lbl" style="text-align:center;">Richtig</div></div>
+        <div class="detail-item"><div class="num" style="text-align:center;color:#ef4444;">${s.falsch}</div><div class="lbl" style="text-align:center;">Falsch</div></div>
+        <div class="detail-item"><div class="num" style="text-align:center;color:#3b82f6;">${quote}%</div><div class="lbl" style="text-align:center;">Quote</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">🔥 Serie</div>
+      <div style="font-size:28px;font-weight:700;">${s.serie}</div>
+      <div style="font-size:13px;color:#94a3b8;">Aktuelle Serie richtiger Antworten</div>
+      <div style="margin-top:12px;font-size:14px;">Beste Serie: <strong>${s.maxSerie}</strong> richtige</div>
+    </div>
+    <div class="card">
+      <div class="card-header">📖 Lernfelder</div>
+      ${LERNFELDER.map(lf => {
+        const erg = state.ergebnisse[lf.id];
+        const richtig = erg ? erg.richtig : 0;
+        const total = FRAGEN[lf.id] ? FRAGEN[lf.id].length : 0;
+        const pct = total > 0 ? Math.round(richtig / total * 100) : 0;
+        return `<div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span>${lf.icon} ${lf.name}</span>
+            <span>${richtig}/${total} (${pct}%)</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  app.innerHTML = html;
+}
+
+// ====================================================================
+// RESET
+// ====================================================================
+function resetProgress() {
+  if (!confirm('Wirklich den gesamten Fortschritt zurücksetzen?')) return;
+  state.ergebnisse = {};
+  state.statistik = { gespielt:0, richtig:0, falsch:0, serie:0, maxSerie:0 };
+  saveErgebnisse();
+  render();
+}
+
+// ====================================================================
+// INIT
+// ====================================================================
+render();
+</script>
+</body>
+</html>
